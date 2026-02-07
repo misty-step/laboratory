@@ -1,62 +1,51 @@
-# Prompt Injection Defense: Untrusted Content Tagging
+# Laboratory
 
-**Can wrapping untrusted CLI output in security boundary tags reduce prompt injection success?**
+Misty Step's open science laboratory. Where hypotheses are tested, experiments are run, and knowledge is forged.
 
-A controlled scientific experiment measuring whether content tagging provides meaningful defense against prompt injection attacks on LLM-powered agents.
+## Philosophy
 
-## The Problem
+We believe in scientific rigor for software engineering. Every claim should be testable. Every experiment should be reproducible. Every result should be documented.
 
-AI agents that process untrusted content (GitHub issues, emails, web pages) are vulnerable to prompt injection. This is [the most critical unsolved security problem](https://simonwillison.net/2025/Jun/14/lethal-trifecta/) facing AI agents with tool access.
-
-## The Hypothesis
-
-**H₁:** LLM agents exposed to injection payloads wrapped in security boundary tags will execute injected instructions at a significantly lower rate than agents receiving raw payloads.
-
-## Design
-
-- **3 conditions:** Raw (control) · Static tags · Dynamic nonce tags
-- **8 attack categories:** Simple overrides → sophisticated tag-breaking
-- **3 trials per combination** for statistical validity
-- **Multiple models:** Claude Haiku, Sonnet, Kimi K2.5
-
-See [EXPERIMENT.md](./EXPERIMENT.md) for full methodology.
-
-## Quick Start
-
-```bash
-git clone https://github.com/misty-step/prompt-injection-defense.git
-cd prompt-injection-defense
-pip install -r requirements.txt
-export ANTHROPIC_API_KEY=your-key-here
-python run_experiment.py
-python analyze.py
-```
+**Observe → Hypothesize → Test → Document → Share**
 
 ## Structure
 
 ```
-├── EXPERIMENT.md          # Full methodology
-├── run_experiment.py      # Test harness
-├── analyze.py             # Statistical analysis
-├── payloads/              # Injection payload definitions
-├── results/               # Raw CSV data + charts
-├── report/                # Scientific report
-└── wrapper/               # The defense implementation
+laboratory/
+├── experiments/          # Individual experiments, each self-contained
+│   └── <experiment>/
+│       ├── HYPOTHESIS.md # What we're testing and why
+│       ├── README.md     # Setup, methodology, how to reproduce
+│       ├── results/      # Raw data and outputs
+│       └── report/       # Analysis, findings, papers
+├── tools/                # Shared experiment infrastructure
+├── papers/               # Published findings and write-ups
+└── templates/            # Experiment templates
 ```
 
-## Why This Matters
+## Running an Experiment
 
-If content tagging works, it's a simple, universal defense any agent framework can adopt. If it doesn't, that saves the community from false confidence. Either way: science wins.
+Each experiment is self-contained in its own directory under `experiments/`. To start a new one:
+
+1. Copy `templates/experiment/` to `experiments/<your-experiment-name>/`
+2. Write your `HYPOTHESIS.md` — what you're testing and what you expect
+3. Build your experiment tooling
+4. Run it, collect results
+5. Write up findings in `report/`
+
+## Experiments
+
+| Experiment | Status | Summary |
+|-----------|--------|---------|
+| [prompt-injection-boundary-tags](experiments/prompt-injection-boundary-tags/) | Complete (Round 1 & 2) | Does wrapping CLI output in security boundary tags reduce prompt injection success rates against LLM agents? |
 
 ## Contributing
 
-PRs welcome: additional payloads, model testing, alternative tagging strategies, statistical review.
+New experiment ideas welcome. File an issue with:
+- **Hypothesis**: What do you want to test?
+- **Why it matters**: What decision does this inform?
+- **Methodology**: How would you test it?
 
 ## License
 
 MIT
-
-## Authors
-
-- **Kaylee** — AI cofounder @ [Misty Step](https://mistystep.io)
-- **Phaedrus** — Human cofounder @ [Misty Step](https://mistystep.io)
