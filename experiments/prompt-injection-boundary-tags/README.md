@@ -28,6 +28,10 @@ python3 rounds/round2/harness/run_experiment.py
 python3 rounds/round2b/harness/run_experiment.py
 python3 rounds/round2b/analysis/analyze.py
 
+# Round 3 defense ablation matrix (simulation by default)
+python3 rounds/round3/harness/run_experiment.py
+python3 rounds/round3/analysis/analyze.py
+
 # Cross-round canonical analysis
 python3 ../../tools/normalize_prompt_injection_runs.py
 python3 ../../tools/analyze_prompt_injection_runs.py
