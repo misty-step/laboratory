@@ -6,7 +6,7 @@ A rule-based filter that inspects LLM tool calls before execution catches **93% 
 
 ## What we tested
 
-When AI agents process untrusted content (emails, GitHub issues, web pages), prompt injection attacks can trick the model into making dangerous tool calls — reading secret files, running exfiltration commands, or sending data to attackers. We tested whether a simple post-execution filter can catch these calls before they cause harm.
+When AI agents process untrusted content (emails, GitHub issues, web pages), prompt injection attacks can trick the model into making dangerous tool calls — reading secret files, running exfiltration commands, or sending data to attackers. We tested whether a simple pre-execution filter can catch these calls before they cause harm.
 
 ## Result
 

@@ -81,7 +81,7 @@
 
 ## Citation
 
-```
+```text
 Misty Step (2026). "Human-Calibrated Scoring for Prompt Injection
 Benchmarks." Round 2B, Prompt Injection Boundary Tags Experiment.
 github.com/misty-step/laboratory

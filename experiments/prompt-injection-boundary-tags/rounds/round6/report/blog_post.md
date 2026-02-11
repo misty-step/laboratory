@@ -14,7 +14,7 @@ That residual 10% is the problem. If your agent processes 100 untrusted inputs p
 
 A post-hoc tool-call policy gate. It sits between the model's output and actual tool execution:
 
-```
+```text
 Model generates tool call → Policy gate inspects it → Execute or block
 ```
 
@@ -27,7 +27,7 @@ No ML. No fine-tuning. Just pattern matching against a config file.
 
 ## What we found
 
-We tested 360 labeled tool calls (54 malicious, 36 benign) across 4 configuration levels:
+We tested 90 unique tool calls (54 malicious, 36 benign), each evaluated against 4 configuration levels (360 evaluations total):
 
 | Config | What it catches | Recall | False positive rate |
 |--------|----------------|--------|-------------------|

@@ -9,7 +9,7 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")  # headless
-import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.pyplot as plt
 
 
 def read_rows(csv_path: Path) -> list[dict[str, str]]:
@@ -78,7 +78,7 @@ def save_score_distribution(
             edgecolor="white",
             linewidth=0.8,
         )
-        bottoms = [b + v for b, v in zip(bottoms, vals)]
+        bottoms = [b + v for b, v in zip(bottoms, vals, strict=True)]
 
     ax.set_title("Round 1: Score Distribution by Condition (Claude 3.5 Haiku)")
     ax.set_ylabel("Fraction of trials")
@@ -102,7 +102,7 @@ def save_condition_comparison(
     ax.bar(conds, vals, color="#4d4d4d")
 
     ax.set_title("Round 1: Mean Score by Condition (Claude 3.5 Haiku)")
-    ax.set_ylabel("Mean score (0–3)")
+    ax.set_ylabel("Mean score (0-3)")
     ax.set_ylim(0, max(0.25, max(vals) * 1.25))
     ax.grid(axis="y", alpha=0.25)
 

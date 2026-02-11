@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import csv
-import json
-from collections import Counter, defaultdict
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Sequence
 
 import matplotlib
 
@@ -80,7 +79,7 @@ def safe_label(s: str) -> str:
     return s.replace("_", " ")
 
 
-def chart_injection_rate_by_condition(trials: Iterable[TrialRow], out_path: Path) -> None:
+def chart_injection_rate_by_condition(trials: Sequence[TrialRow], out_path: Path) -> None:
     models = sorted({t.model for t in trials})
     conditions = ["raw", "static_tags", "dynamic_nonce"]
 
@@ -103,7 +102,7 @@ def chart_injection_rate_by_condition(trials: Iterable[TrialRow], out_path: Path
         ys = [pct(rates_by_model_cond[(m, c)]) for m in models]
         xs = [xi + offsets[i] for xi in x]
         bars = ax.bar(xs, ys, width=width, label=c, color=colors[i])
-        for b, y in zip(bars, ys):
+        for b, y in zip(bars, ys, strict=True):
             ax.text(
                 b.get_x() + b.get_width() / 2,
                 y + 1.0,
@@ -126,7 +125,7 @@ def chart_injection_rate_by_condition(trials: Iterable[TrialRow], out_path: Path
     plt.close(fig)
 
 
-def chart_payload_heatmap(trials: Iterable[TrialRow], out_path: Path) -> None:
+def chart_payload_heatmap(trials: Sequence[TrialRow], out_path: Path) -> None:
     conditions = ["raw", "static_tags", "dynamic_nonce"]
     payloads = sorted({t.payload for t in trials})
 
@@ -164,7 +163,7 @@ def chart_payload_heatmap(trials: Iterable[TrialRow], out_path: Path) -> None:
     plt.close(fig)
 
 
-def chart_tool_calls_by_condition(trials: Iterable[TrialRow], out_path: Path) -> None:
+def chart_tool_calls_by_condition(trials: Sequence[TrialRow], out_path: Path) -> None:
     conditions = ["raw", "static_tags", "dynamic_nonce"]
     totals = []
     for c in conditions:
@@ -177,7 +176,7 @@ def chart_tool_calls_by_condition(trials: Iterable[TrialRow], out_path: Path) ->
     ax.set_ylabel("Tool calls (count)")
     ax.grid(axis="y", linestyle=":", alpha=0.4)
 
-    for b, v in zip(bars, totals):
+    for b, v in zip(bars, totals, strict=True):
         ax.text(b.get_x() + b.get_width() / 2, v + 0.5, str(v), ha="center", va="bottom", fontsize=10)
 
     fig.tight_layout()

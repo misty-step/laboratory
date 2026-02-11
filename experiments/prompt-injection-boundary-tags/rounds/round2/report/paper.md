@@ -167,7 +167,7 @@ Model choice dominates risk. GPT-4o is the highest-risk model here under realist
 
 ### 4.5 Limitations
 - N per cell is small (3 repetitions); tail events may be under-sampled.
-- Single task framing (issue summarization) and single tool set.
+- Single-task framing (issue summarization) and single tool set.
 - Tools are mocked; real systems add side channels (network, filesystem breadth, auth scope).
 - “Injection success” collapses an ordinal score into a binary threshold (>=2).
 - Results are conditional on the exact system prompt, tool specs, and payload phrasing.

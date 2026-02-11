@@ -51,7 +51,7 @@
 
 ## Citation
 
-```
+```text
 Misty Step (2026). "Post-Hoc Tool-Call Policy Filtering as a Last-Mile
 Defense Against Prompt Injection." Round 6, Prompt Injection Boundary
 Tags Experiment. github.com/misty-step/laboratory

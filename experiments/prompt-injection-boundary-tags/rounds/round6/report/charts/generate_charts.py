@@ -16,14 +16,24 @@ except ImportError:
     HAS_MPL = False
 
 ROUND_DIR = Path(__file__).resolve().parent.parent.parent
-DATA_PATH = ROUND_DIR / "data" / "policy_eval_latest.csv"
+def _resolve_data_path() -> Path:
+    latest = ROUND_DIR / "data" / "policy_eval_latest.csv"
+    if latest.exists():
+        return latest
+    candidates = sorted(ROUND_DIR.glob("data/policy_eval_*.csv"), reverse=True)
+    if candidates:
+        return candidates[0]
+    raise FileNotFoundError(f"No policy_eval CSV found in {ROUND_DIR / 'data'}")
+
+
+DATA_PATH = _resolve_data_path()
 CHART_DIR = Path(__file__).resolve().parent
 
 
 def load_data():
     """Load and aggregate policy evaluation data."""
     configs = {}
-    with open(DATA_PATH) as f:
+    with open(DATA_PATH, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             cfg = row["config_name"]
@@ -66,7 +76,7 @@ def generate_precision_recall_chart(configs):
     x = range(len(order))
     width = 0.35
 
-    fig, ax = plt.subplots(figsize=(8, 5))
+    _fig, ax = plt.subplots(figsize=(8, 5))
     bars1 = ax.bar([i - width / 2 for i in x], [metrics[c]["precision"] for c in order],
                    width, label="Precision", color="#2563eb")
     bars2 = ax.bar([i + width / 2 for i in x], [metrics[c]["recall"] for c in order],
@@ -102,7 +112,7 @@ def generate_fpr_chart(configs):
     order = ["permissive", "balanced", "strict", "paranoid"]
     metrics = {cfg: calc_metrics(configs[cfg]) for cfg in order}
 
-    fig, ax = plt.subplots(figsize=(6, 4))
+    _fig, ax = plt.subplots(figsize=(6, 4))
     colors = ["#22c55e", "#22c55e", "#f59e0b", "#dc2626"]
     bars = ax.bar(order, [metrics[c]["fpr"] for c in order], color=colors)
 
@@ -123,7 +133,7 @@ def generate_fpr_chart(configs):
 
 
 def generate_tool_heatmap(configs):
-    """Heatmap: recall by tool type × config."""
+    """Heatmap: recall by tool type x config."""
     if not HAS_MPL:
         print("matplotlib not available, skipping tool_recall_heatmap.png")
         return
@@ -139,7 +149,7 @@ def generate_tool_heatmap(configs):
             row.append(m["recall"])
         data.append(row)
 
-    fig, ax = plt.subplots(figsize=(7, 4))
+    _fig, ax = plt.subplots(figsize=(7, 4))
     im = ax.imshow(data, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
 
     ax.set_xticks(range(len(order)))

@@ -8,7 +8,7 @@ What if you could catch those calls before they execute?
 We built a tool-call policy gate. Here's what we found. (thread)
 
 ## Post 2 (Setup)
-We tested 360 tool calls — malicious reads, exfiltration commands, data theft messages — against 4 filter configurations.
+We tested 90 unique tool calls — malicious reads, exfiltration commands, data theft messages — against 4 filter configurations (360 evaluations total).
 
 The question: can simple pattern matching (not ML) catch malicious tool calls without breaking legitimate dev workflows?
 
@@ -39,4 +39,4 @@ github.com/misty-step/laboratory
 
 Round 6 of our prompt injection defense research. Previous rounds: boundary tags, scorer calibration, defense ablation, multi-turn attacks, security-utility tradeoffs.
 
-Full blog post: [link]
+Full blog post: blog_post.md
