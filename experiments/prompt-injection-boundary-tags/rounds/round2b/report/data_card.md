@@ -70,6 +70,7 @@
 3. **Scorer overfitting risk.** The v2 scorer config was tuned on the same dataset it's evaluated against. Generalization to new payloads/models is not tested here.
 4. **Response previews are truncated.** Some labeling decisions relied on truncated text. Full responses were consulted for ambiguous cases but are not included in the published data.
 5. **English-only payloads.** All injection attempts are in English. Multilingual injection is not tested.
+6. **Model currency.** GPT-4o was current when trials were run (early Feb 2026) but was deprecated Feb 13, 2026. Results reflect GPT-4o behavior at that point in time. Future cross-model validation (issue #5) will use current frontier models.
 
 ## Intended Use
 

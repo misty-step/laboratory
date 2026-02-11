@@ -48,6 +48,7 @@ Path: `experiments/prompt-injection-boundary-tags/rounds/round2/data/results-rou
 - Mock tools approximate but do not fully reproduce real deployment risk.
 - Scoring threshold (`score >= 2`) compresses severity into a binary success metric.
 - The raw capture file may include additional attempted model runs; use filters or the calibrated slice for the published Round 2 aggregates.
+- GPT-4o was current when trials were run (early Feb 2026) but was deprecated Feb 13, 2026. Results reflect GPT-4o behavior at that point in time.
 
 ## Citation Format
 If you use this dataset, cite as:

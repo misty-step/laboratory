@@ -39,7 +39,7 @@ Round 2B takes the same 324 trials from Round 2 and adds:
 ### 2.1 Dataset
 
 The 324 trials come from Round 2 of the boundary-tag experiment:
-- **Models:** Claude Haiku 3.5, GPT-4o, Kimi K2.5
+- **Models:** Claude Haiku 3.5, GPT-4o (deprecated Feb 13, 2026; current at time of testing), Kimi K2.5
 - **Conditions:** raw, static_tags, dynamic_nonce
 - **Payloads:** 12 categories (direct_override, gradual_escalation, etc.)
 - **Trials:** 3 repetitions per (model, payload, condition) cell
