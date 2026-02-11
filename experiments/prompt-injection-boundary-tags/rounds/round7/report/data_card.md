@@ -15,6 +15,7 @@
 ## Collection Method
 - Deterministic simulation by default (`--simulate`).
 - Optional live provider calls with API keys (`--live`).
+- Budget management supports run-level and per-trial hard ceilings with JSON spend reports.
 
 ## Limitations
 - Live availability depends on provider/model access at run time.

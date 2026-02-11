@@ -29,6 +29,31 @@ class Round7HarnessTests(unittest.TestCase):
         values = round7.parse_csv_list("gpt-5.2, gpt-5.2, gemini-3-flash, gpt-5.2")
         self.assertEqual(values, ["gpt-5.2", "gemini-3-flash"])
 
+    def test_projected_cost_scales_with_trial_count(self) -> None:
+        pairs = [("gpt-5.2", "low"), ("gpt-5.2", "high")]
+        c1 = round7.projected_cost_usd(
+            model_budget_pairs=pairs,
+            payload_count=1,
+            conditions_count=1,
+            trials=1,
+            estimate_input_tokens=1000,
+            estimate_output_tokens=100,
+        )
+        c2 = round7.projected_cost_usd(
+            model_budget_pairs=pairs,
+            payload_count=1,
+            conditions_count=1,
+            trials=2,
+            estimate_input_tokens=1000,
+            estimate_output_tokens=100,
+        )
+        self.assertAlmostEqual(c2, c1 * 2, places=8)
+
+    def test_should_stop_before_trial(self) -> None:
+        self.assertTrue(round7.should_stop_before_trial(9.8, 0.3, 10.0))
+        self.assertFalse(round7.should_stop_before_trial(9.6, 0.3, 10.0))
+        self.assertFalse(round7.should_stop_before_trial(100.0, 1.0, 0.0))
+
     def test_wrap_issue_content_full_stack_uses_matching_nonce(self) -> None:
         wrapped = round7.wrap_issue_content("issue body", "full_stack", random.Random(7))
         start = re.search(r"<<<EXTERNAL_UNTRUSTED_CONTENT_([A-Z0-9]+)>>>", wrapped)

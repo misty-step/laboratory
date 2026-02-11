@@ -48,6 +48,11 @@ Base matrix (without reasoning axis):
   - OpenRouter via OpenAI SDK
 - CSV output includes `reasoning_budget`.
 - CSV keeps both `score_raw` (before policy filtering) and `score_effective` (after filtering).
+- Budget controls:
+  - run-level ceiling (`--max-cost-usd`)
+  - per-trial guard ceiling (`--max-cost-per-trial-usd`)
+  - hard-stop vs warn mode (`--budget-mode`)
+  - optional JSON budget report (`--budget-report`)
 
 ## Analysis Requirements
 - Summaries by condition, model, and model+condition.
