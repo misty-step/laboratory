@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup check check-wrappers smoke-analyze ci-smoke test run-r1 analyze-r1 run-r2 run-r2b analyze-r2b calibrate-r2b run-r3 analyze-r3 run-r4 analyze-r4 run-r5 analyze-r5 run-r6 analyze-r6 normalize-runs analyze-runs
+.PHONY: setup check check-wrappers smoke-analyze ci-smoke test run-r1 analyze-r1 run-r2 run-r2b analyze-r2b calibrate-r2b run-r3 analyze-r3 run-r4 analyze-r4 run-r5 analyze-r5 run-r6 analyze-r6 normalize-runs analyze-runs run-opencode analyze-opencode
 
 setup:
 	$(PYTHON) -m venv .venv
@@ -94,3 +94,12 @@ normalize-runs:
 
 analyze-runs:
 	$(PYTHON) tools/analyze_prompt_injection_runs.py
+
+run-opencode:
+	cd experiments/opencode-agent-models && while IFS= read -r model; do \
+		[ -z "$$model" ] || [ "$${model#\#}" != "$$model" ] && continue; \
+		./run-test.sh "$$model"; \
+	done < models.txt
+
+analyze-opencode:
+	cd experiments/opencode-agent-models && ./analyze.sh
