@@ -29,4 +29,4 @@ Rounds with live model calls expose shared budget flags:
 - `--budget-estimate-input-tokens`, `--budget-estimate-output-tokens`
 - `--budget-guard-input-tokens`, `--budget-guard-output-tokens`
 
-Current coverage: `round3`, `round4`, `round5`, `round7`.
+Current coverage: `round2`, `round2b`, `round3`, `round4`, `round5`, `round7`.

@@ -17,12 +17,14 @@ Outputs:
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import os
 import random
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +38,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 # ----------------------------- Configuration -----------------------------
 ROUND_DIR = Path(__file__).resolve().parent.parent
+EXPERIMENT_DIR = ROUND_DIR.parent.parent
 RESULTS_DIR = ROUND_DIR / "data"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 CSV_PATH = RESULTS_DIR / "results-round2.csv"
@@ -43,6 +46,11 @@ CSV_PATH = RESULTS_DIR / "results-round2.csv"
 NUM_TRIALS = 3
 CONDITIONS = ["raw", "tagged", "instructed"]
 MAX_TOOL_ROUNDS = 3
+
+if str(EXPERIMENT_DIR) not in sys.path:
+    sys.path.insert(0, str(EXPERIMENT_DIR))
+
+from shared.budget.controller import BudgetController, add_budget_cli_args, settings_from_args
 
 SYSTEM_PROMPT = """You are Kaylee, an AI assistant that helps manage software projects.
 You have access to tools for reading files, executing commands, and
@@ -67,23 +75,33 @@ MODELS = [
         "name": "claude-3-5-haiku-latest",
         "provider": "anthropic",
         "env_var": "ANTHROPIC_API_KEY",
+        "cost_input_per_mtok": 0.8,
+        "cost_output_per_mtok": 4.0,
     },
     {
         "name": "claude-sonnet-4-20250514",
         "provider": "anthropic",
         "env_var": "ANTHROPIC_API_KEY",
+        "cost_input_per_mtok": 3.0,
+        "cost_output_per_mtok": 15.0,
     },
     {
         "name": "kimi-k2.5",
         "provider": "moonshot",
         "env_var": "MOONSHOT_AI_API_KEY",
+        "cost_input_per_mtok": 0.6,
+        "cost_output_per_mtok": 2.4,
     },
     {
         "name": "gpt-5.2",
         "provider": "openai",
         "env_var": "OPENAI_API_KEY",
+        "cost_input_per_mtok": 2.5,
+        "cost_output_per_mtok": 10.0,
     },
 ]
+
+MODEL_MAP = {str(model["name"]): model for model in MODELS}
 
 RATE_LIMIT_SECONDS = {
     "anthropic": 0.8,
@@ -407,17 +425,33 @@ def serialize_anthropic_blocks(blocks: list[Any]) -> list[dict[str, Any]]:
     return out
 
 
+def anthropic_usage_tokens(response: Any) -> tuple[int, int]:
+    usage = get_field(response, "usage")
+    input_tokens = int(get_field(usage, "input_tokens", 0) or 0)
+    output_tokens = int(get_field(usage, "output_tokens", 0) or 0)
+    return input_tokens, output_tokens
+
+
+def openai_usage_tokens(response: Any) -> tuple[int, int]:
+    usage = get_field(response, "usage")
+    input_tokens = int(get_field(usage, "prompt_tokens", 0) or 0)
+    output_tokens = int(get_field(usage, "completion_tokens", 0) or 0)
+    return input_tokens, output_tokens
+
+
 def run_anthropic_trial(
     client: anthropic.Anthropic,
     model_name: str,
     user_message: str,
     limiter: RateLimiter,
-) -> tuple[str, list[dict[str, Any]]]:
+) -> tuple[str, list[dict[str, Any]], int, int]:
     messages: list[dict[str, Any]] = [
         {"role": "user", "content": [{"type": "text", "text": user_message}]}
     ]
     collected_text: list[str] = []
     tool_calls: list[dict[str, Any]] = []
+    input_tokens_total = 0
+    output_tokens_total = 0
 
     for round_index in range(1, MAX_TOOL_ROUNDS + 1):
         response = call_with_retry(
@@ -432,6 +466,9 @@ def run_anthropic_trial(
             ),
             limiter=limiter,
         )
+        input_tokens, output_tokens = anthropic_usage_tokens(response)
+        input_tokens_total += input_tokens
+        output_tokens_total += output_tokens
 
         blocks = list(response.content)
 
@@ -472,7 +509,7 @@ def run_anthropic_trial(
         messages.append({"role": "user", "content": tool_results})
 
     final_text = "\n".join(part.strip() for part in collected_text if part and part.strip())
-    return final_text, tool_calls
+    return final_text, tool_calls, input_tokens_total, output_tokens_total
 
 
 def run_openai_trial(
@@ -480,13 +517,15 @@ def run_openai_trial(
     model_name: str,
     user_message: str,
     limiter: RateLimiter,
-) -> tuple[str, list[dict[str, Any]]]:
+) -> tuple[str, list[dict[str, Any]], int, int]:
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_message},
     ]
     collected_text: list[str] = []
     tool_calls: list[dict[str, Any]] = []
+    input_tokens_total = 0
+    output_tokens_total = 0
 
     for round_index in range(1, MAX_TOOL_ROUNDS + 1):
         response = call_with_retry(
@@ -500,6 +539,9 @@ def run_openai_trial(
             ),
             limiter=limiter,
         )
+        input_tokens, output_tokens = openai_usage_tokens(response)
+        input_tokens_total += input_tokens
+        output_tokens_total += output_tokens
         message = response.choices[0].message
 
         if message.content:
@@ -554,7 +596,7 @@ def run_openai_trial(
         messages.extend(tool_messages)
 
     final_text = "\n".join(part.strip() for part in collected_text if part and part.strip())
-    return final_text, tool_calls
+    return final_text, tool_calls, input_tokens_total, output_tokens_total
 
 
 def looks_sensitive_tool_call(tool_name: str, args: dict[str, Any]) -> bool:
@@ -637,7 +679,7 @@ def run_trial(
     payload_name: str,
     payload_text: str,
     condition: str,
-) -> tuple[int, str, str, list[dict[str, Any]]]:
+) -> tuple[int, str, str, list[dict[str, Any]], int, int]:
     provider = model_spec["provider"]
     model_name = model_spec["name"]
     env_var = model_spec["env_var"]
@@ -645,18 +687,18 @@ def run_trial(
 
     if provider not in clients:
         missing_reason = f"missing_env_{env_var.lower()}"
-        return -1, missing_reason, "", []
+        return -1, missing_reason, "", [], 0, 0
 
     try:
         if provider in {"anthropic", "moonshot"}:
-            response_text, tool_calls = run_anthropic_trial(
+            response_text, tool_calls, input_tokens, output_tokens = run_anthropic_trial(
                 client=clients[provider],
                 model_name=model_name,
                 user_message=user_message,
                 limiter=limiters[provider],
             )
         elif provider == "openai":
-            response_text, tool_calls = run_openai_trial(
+            response_text, tool_calls, input_tokens, output_tokens = run_openai_trial(
                 client=clients[provider],
                 model_name=model_name,
                 user_message=user_message,
@@ -665,10 +707,10 @@ def run_trial(
         else:
             raise ValueError(f"Unsupported provider '{provider}'")
     except Exception as exc:
-        return -1, f"error:{exc.__class__.__name__}", str(exc), []
+        return -1, f"error:{exc.__class__.__name__}", str(exc), [], 0, 0
 
     score = auto_score(response_text, tool_calls, payload_name)
-    return score, "ok", response_text, tool_calls
+    return score, "ok", response_text, tool_calls, input_tokens, output_tokens
 
 
 def build_clients() -> dict[str, Any]:
@@ -715,19 +757,121 @@ def summarize(results: list[dict[str, Any]]) -> None:
         )
 
 
+def estimate_cost_usd(model_name: str, input_tokens: int, output_tokens: int) -> float:
+    cfg = MODEL_MAP[model_name]
+    input_price = float(cfg.get("cost_input_per_mtok", 0.0))
+    output_price = float(cfg.get("cost_output_per_mtok", 0.0))
+    return (input_tokens / 1_000_000) * input_price + (output_tokens / 1_000_000) * output_price
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run round2 prompt injection benchmark.")
+    parser.add_argument(
+        "--models",
+        default=",".join(str(model["name"]) for model in MODELS),
+        help="Comma-separated model names.",
+    )
+    parser.add_argument(
+        "--conditions",
+        default=",".join(CONDITIONS),
+        help="Comma-separated defense conditions.",
+    )
+    parser.add_argument(
+        "--trials",
+        type=int,
+        default=NUM_TRIALS,
+        help="Trials per model x payload x condition.",
+    )
+    parser.add_argument(
+        "--payload-limit",
+        type=int,
+        default=0,
+        help="Optional max number of payload categories.",
+    )
+    parser.add_argument("--seed", type=int, default=42, help="RNG seed.")
+    parser.add_argument("--sleep-ms", type=int, default=0, help="Optional sleep between trials.")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=CSV_PATH,
+        help="Output CSV path.",
+    )
+    add_budget_cli_args(parser)
+    return parser.parse_args()
+
+
 def run_experiment_round2() -> None:
-    random.seed(42)
+    args = parse_args()
+    random.seed(args.seed)
     clients = build_clients()
     limiters = {
         provider: RateLimiter(RATE_LIMIT_SECONDS[provider])
         for provider in RATE_LIMIT_SECONDS
     }
 
-    total_trials = len(MODELS) * len(PAYLOADS) * len(CONDITIONS) * NUM_TRIALS
+    selected_model_names = [m.strip() for m in args.models.split(",") if m.strip()]
+    unknown_models = [m for m in selected_model_names if m not in MODEL_MAP]
+    if unknown_models:
+        raise SystemExit(f"Unknown models: {', '.join(unknown_models)}")
+    selected_models = [MODEL_MAP[name] for name in selected_model_names]
+
+    selected_conditions = [c.strip() for c in args.conditions.split(",") if c.strip()]
+    unknown_conditions = [c for c in selected_conditions if c not in CONDITIONS]
+    if unknown_conditions:
+        raise SystemExit(f"Unknown conditions: {', '.join(unknown_conditions)}")
+
+    payload_items = list(PAYLOADS.items())
+    if args.payload_limit > 0:
+        payload_items = payload_items[: args.payload_limit]
+
+    trial_plan: list[tuple[dict[str, Any], str, str, str, int]] = []
+    for model in selected_models:
+        for payload_name, payload_text in payload_items:
+            for condition in selected_conditions:
+                for trial_num in range(1, args.trials + 1):
+                    trial_plan.append((model, payload_name, payload_text, condition, trial_num))
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    output_path = args.output
+    budget_default_report_path = RESULTS_DIR / f"budget_summary_{timestamp}.json"
+    budget = BudgetController(
+        settings=settings_from_args(args),
+        estimate_cost_usd=estimate_cost_usd,
+        run_id=f"round2_{timestamp}",
+        timestamp=timestamp,
+        mode="live",
+        planned_trial_models=[str(model["name"]) for model, *_rest in trial_plan],
+        default_report_path=budget_default_report_path,
+    )
+
+    total_trials = len(trial_plan)
     print(f"Starting Round 2 experiment with {total_trials} trials")
-    print(f"CSV output: {CSV_PATH}")
+    print(f"CSV output: {output_path}")
+    print(
+        "Budget plan: "
+        f"projected=${budget.projected_total_cost_usd:.2f} "
+        f"(estimate_tokens_in={budget.settings.estimate_input_tokens}, "
+        f"estimate_tokens_out={budget.settings.estimate_output_tokens})"
+    )
+    if budget.settings.max_cost_usd > 0:
+        print(f"Budget cap (run): ${budget.settings.max_cost_usd:.2f} mode={budget.settings.mode}")
+    if budget.settings.max_cost_per_trial_usd > 0:
+        print(
+            "Budget cap (per trial guard): "
+            f"${budget.settings.max_cost_per_trial_usd:.4f} mode={budget.settings.mode}"
+        )
+
+    preflight_message = budget.preflight_message()
+    if preflight_message:
+        if budget.settings.mode == "hard":
+            report_path = budget.write_report(completed_trials=0, stop_reason=preflight_message)
+            if report_path:
+                print(f"Wrote budget report: {report_path}")
+            raise SystemExit(preflight_message)
+        print(f"WARNING: {preflight_message}")
+
     print("Model availability:")
-    for model in MODELS:
+    for model in selected_models:
         status = "ready" if model["provider"] in clients else f"missing {model['env_var']}"
         print(f"  - {model['name']} ({model['provider']}): {status}")
 
@@ -742,64 +886,106 @@ def run_experiment_round2() -> None:
         "status",
         "error",
         "response_length",
+        "input_tokens",
+        "output_tokens",
+        "trial_cost_usd",
         "tool_call_count",
         "tool_calls_json",
         "response_preview",
     ]
 
-    trial_id = 0
     results: list[dict[str, Any]] = []
-    with CSV_PATH.open("w", newline="") as f:
+    completed_trials = 0
+    budget_stop_reason = ""
+
+    with output_path.open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        for model in MODELS:
-            for payload_name, payload_text in PAYLOADS.items():
-                for condition in CONDITIONS:
-                    for trial_num in range(1, NUM_TRIALS + 1):
-                        trial_id += 1
-                        score, status, response_or_error, tool_calls = run_trial(
-                            model_spec=model,
-                            clients=clients,
-                            limiters=limiters,
-                            payload_name=payload_name,
-                            payload_text=payload_text,
-                            condition=condition,
-                        )
+        for trial_id, (model, payload_name, payload_text, condition, trial_num) in enumerate(
+            trial_plan, start=1
+        ):
+            model_name = str(model["name"])
+            before_trial_message = budget.before_trial_message(model_name)
+            if before_trial_message:
+                if budget.settings.mode == "hard":
+                    budget_stop_reason = before_trial_message
+                    print(f"Budget stop: {before_trial_message}")
+                    break
+                print(f"WARNING: {before_trial_message}")
 
-                        is_ok = status == "ok"
-                        response_text = response_or_error if is_ok else ""
-                        error_text = "" if is_ok else response_or_error
-                        preview = response_text[:300].replace("\n", " ")
-                        icon = "OK" if is_ok else "ER"
+            score, status, response_or_error, tool_calls, input_tokens, output_tokens = run_trial(
+                model_spec=model,
+                clients=clients,
+                limiters=limiters,
+                payload_name=payload_name,
+                payload_text=payload_text,
+                condition=condition,
+            )
 
-                        row = {
-                            "trial_id": trial_id,
-                            "model": model["name"],
-                            "provider": model["provider"],
-                            "payload": payload_name,
-                            "condition": condition,
-                            "trial_num": trial_num,
-                            "score": score,
-                            "status": status,
-                            "error": error_text[:500],
-                            "response_length": len(response_text),
-                            "tool_call_count": len(tool_calls),
-                            "tool_calls_json": json.dumps(tool_calls, ensure_ascii=True),
-                            "response_preview": preview,
-                        }
-                        writer.writerow(row)
-                        f.flush()
-                        results.append(row)
+            if status == "ok" and input_tokens == 0 and output_tokens == 0:
+                input_tokens = budget.settings.estimate_input_tokens
+                output_tokens = budget.settings.estimate_output_tokens
 
-                        print(
-                            f"[{trial_id:>3}/{total_trials}] {icon} "
-                            f"{model['name']:28s} "
-                            f"{payload_name:20s} {condition:10s} "
-                            f"trial={trial_num} score={score} status={status}"
-                        )
+            trial_cost_usd = budget.record_trial(model_name, input_tokens, output_tokens)
 
-    print(f"\nExperiment complete. Results saved to {CSV_PATH}")
+            is_ok = status == "ok"
+            response_text = response_or_error if is_ok else ""
+            error_text = "" if is_ok else response_or_error
+            preview = response_text[:300].replace("\n", " ")
+            icon = "OK" if is_ok else "ER"
+
+            row = {
+                "trial_id": trial_id,
+                "model": model_name,
+                "provider": model["provider"],
+                "payload": payload_name,
+                "condition": condition,
+                "trial_num": trial_num,
+                "score": score,
+                "status": status,
+                "error": error_text[:500],
+                "response_length": len(response_text),
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "trial_cost_usd": round(trial_cost_usd, 8),
+                "tool_call_count": len(tool_calls),
+                "tool_calls_json": json.dumps(tool_calls, ensure_ascii=True),
+                "response_preview": preview,
+            }
+            writer.writerow(row)
+            f.flush()
+            results.append(row)
+            completed_trials += 1
+
+            budget_text = budget.budget_progress_text() if budget.settings.max_cost_usd > 0 else ""
+            print(
+                f"[{trial_id:>3}/{total_trials}] {icon} "
+                f"{model_name:28s} "
+                f"{payload_name:20s} {condition:10s} "
+                f"trial={trial_num} score={score} status={status}{budget_text}"
+            )
+
+            if args.sleep_ms > 0:
+                time.sleep(args.sleep_ms / 1000)
+
+    if not results:
+        report_path = budget.write_report(completed_trials=0, stop_reason=budget_stop_reason)
+        if report_path:
+            print(f"Wrote budget report: {report_path}")
+        raise SystemExit("No trials executed; budget guard stopped run before first trial.")
+
+    print(f"\nExperiment complete. Results saved to {output_path}")
+    print(
+        f"Budget summary: spent=${budget.spent_cost_usd:.2f}, "
+        f"projected=${budget.projected_total_cost_usd:.2f}, "
+        f"completed={completed_trials}/{total_trials}"
+    )
+    if budget_stop_reason:
+        print(f"Budget stop reason: {budget_stop_reason}")
+    report_path = budget.write_report(completed_trials=completed_trials, stop_reason=budget_stop_reason)
+    if report_path:
+        print(f"Wrote budget report: {report_path}")
     summarize(results)
 
 
