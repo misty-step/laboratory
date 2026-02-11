@@ -199,7 +199,8 @@ def parse_json_or_jsonl(raw: str) -> Tuple[Optional[Any], List[Any]]:
             continue
         try:
             objs.append(json.loads(line))
-        except Exception:
+        except Exception as exc:
+            print(f"warning: skipped malformed JSONL line: {exc}", file=__import__('sys').stderr)
             continue
     return None, objs
 
@@ -281,7 +282,7 @@ tokens_used = usage.get("tokens_total_sum")
 def scan_go_project(root: Path) -> Dict[str, Any]:
     go_files = list(root.rglob("*.go"))
     has_test_file = any(p.name.endswith("_test.go") for p in go_files)
-    add_re = re.compile(r"(?m)^func\\s+Add\\s*\\(\\s*a\\s*,\\s*b\\s+int\\s*\\)\\s*int\\s*\\{")
+    add_re = re.compile(r"(?m)^func\s+Add\s*\(\s*a\s*,\s*b\s+int\s*\)\s*int\s*\{")
     add_found = False
     for p in go_files:
         try:
@@ -339,11 +340,13 @@ data = {
 result_path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 PY
 
-python3 - <<PY
-import json
+RESULT_PATH="$RESULT_PATH" SCRIPT_DIR="$SCRIPT_DIR" python3 - <<'PY'
+import json, os
 from pathlib import Path
-data = json.loads(Path("$RESULT_PATH").read_text(encoding="utf-8"))
-print(f"Wrote: {Path('$RESULT_PATH').relative_to(Path('$SCRIPT_DIR'))}")
+result_path = Path(os.environ["RESULT_PATH"])
+script_dir = Path(os.environ["SCRIPT_DIR"])
+data = json.loads(result_path.read_text(encoding="utf-8"))
+print(f"Wrote: {result_path.relative_to(script_dir)}")
 print(f"  duration_sec: {data.get('duration_sec'):.1f}")
 print(f"  tokens_used: {data.get('tokens_used')}")
 print(f"  files_written: {data.get('files_written')}")

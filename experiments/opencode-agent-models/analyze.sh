@@ -29,6 +29,8 @@ for p in paths:
     try:
         data = json.loads(Path(p).read_text(encoding="utf-8"))
     except Exception as e:
+        import sys
+        print(f"warning: failed to parse {p}: {e}", file=sys.stderr)
         rows.append(
             {
                 "Model": Path(p).stem,
@@ -37,9 +39,8 @@ for p in paths:
                 "Files": "",
                 "Commits": "",
                 "GoTest": "",
-                "Exit": "",
+                "Exit": "ERR",
                 "File": os.path.basename(p),
-                "_err": str(e),
             }
         )
         continue

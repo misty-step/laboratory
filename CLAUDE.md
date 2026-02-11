@@ -4,7 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Misty Step's computational laboratory for reproducible software-engineering experiments. Currently focused on one experiment family: **prompt-injection boundary tags** — measuring how boundary-tagging and layered defenses change prompt-injection success rates in agent workflows.
+Misty Step's computational laboratory for reproducible software-engineering experiments. Two active experiment families:
+
+1. **Prompt-injection boundary tags** — measuring how boundary-tagging and layered defenses change prompt-injection success rates in agent workflows.
+2. **OpenCode agent model evaluation** — benchmarking which LLMs effectively act as coding agents (edit files, commit changes, pass tests) vs get stuck in analysis-paralysis loops.
 
 ## Commands
 
@@ -30,6 +33,10 @@ make run-r5 && make analyze-r5
 
 # Cross-round analysis
 make normalize-runs && make analyze-runs
+
+# OpenCode agent model eval
+make run-opencode      # run all models in models.txt (requires opencode + API keys)
+make analyze-opencode  # aggregate results into markdown table
 ```
 
 ## Architecture
@@ -76,6 +83,12 @@ Config-driven via `scorer_config_v2.json`. Functions: `score_response()`, `conta
 - `tools/analyze_prompt_injection_runs.py` — cross-round aggregate analysis
 - `tools/calibrate_round2b_scorer.py` — scorer threshold calibration
 - `tools/check_compat_wrappers.py` — verifies backward-compat wrappers resolve correctly
+
+### OpenCode agent model eval (`experiments/opencode-agent-models/`)
+
+Bash-based harness that evaluates LLMs as coding agents via OpenCode CLI. Creates a temp Go project, asks the model to add a function + test + commit, then measures: duration, tokens, files written, commits made, go test pass rate. Results are JSON files in `results/`. Analysis script aggregates into a markdown comparison table.
+
+Requires: `opencode` CLI, `git`, `go`, `python3`. Models configured in `models.txt`.
 
 ### Root-level compat wrappers
 
