@@ -994,6 +994,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--trials", type=int, default=3, help="Trials per payload x condition x model.")
     parser.add_argument("--payload-limit", type=int, default=0, help="Optional max number of payloads.")
+    parser.add_argument(
+        "--conditions",
+        default="",
+        help="Comma-separated conditions to run (default: all).",
+    )
     parser.add_argument("--seed", type=int, default=42, help="RNG seed for simulation mode.")
     parser.add_argument("--sleep-ms", type=int, default=150, help="Sleep between live API calls.")
     parser.add_argument(
@@ -1045,6 +1050,15 @@ def run() -> None:
     if args.payload_limit > 0:
         payload_items = payload_items[: args.payload_limit]
 
+    selected_conditions = list(CONDITIONS)
+    if getattr(args, "conditions", ""):
+        selected_conditions = parse_csv_list(args.conditions)
+        unknown_conditions = [cond for cond in selected_conditions if cond not in CONDITIONS]
+        if unknown_conditions:
+            raise SystemExit(f"Unknown conditions: {', '.join(unknown_conditions)}")
+        if not selected_conditions:
+            raise SystemExit("No conditions selected.")
+
     model_budget_pairs = expand_model_reasoning_pairs(
         selected_models=selected_models,
         reasoning_models=reasoning_models,
@@ -1059,7 +1073,7 @@ def run() -> None:
     trial_plan: List[Tuple[str, str, str, str, str, int]] = []
     for model_name, reasoning_budget in model_budget_pairs:
         for payload_name, payload_text in payload_items:
-            for condition in CONDITIONS:
+            for condition in selected_conditions:
                 for trial_num in range(1, args.trials + 1):
                     trial_plan.append(
                         (model_name, reasoning_budget, payload_name, payload_text, condition, trial_num)
@@ -1090,7 +1104,7 @@ def run() -> None:
 
     print(f"Starting round7: mode={mode}, trials={total}")
     print(f"Models: {', '.join(selected_models)}")
-    print(f"Payloads: {len(payload_items)} | Conditions: {len(CONDITIONS)} | Trials per combo: {args.trials}")
+    print(f"Payloads: {len(payload_items)} | Conditions: {len(selected_conditions)} | Trials per combo: {args.trials}")
     print(f"Reasoning axis models: {', '.join(reasoning_models) if reasoning_models else 'none'}")
     print(f"Reasoning budgets: {', '.join(reasoning_budgets) if reasoning_budgets else 'none'}")
     print(
