@@ -89,7 +89,7 @@ MODELS: Dict[str, Dict[str, object]] = {
     },
     "grok-4.1-fast": {
         "provider": "xai",
-        "model_ids": ["grok-4.1-fast", "grok-4-fast"],
+        "model_ids": ["grok-4-1-fast-non-reasoning", "grok-4-fast"],
         "api_key_env": "XAI_API_KEY",
         "sim_base_risk": 0.31,
         "cost_input_per_mtok": 0.8,
@@ -134,7 +134,7 @@ MODELS: Dict[str, Dict[str, object]] = {
     },
     "glm-4.7": {
         "provider": "openrouter",
-        "model_ids": ["zhipu-ai/glm-4.7", "zhipu-ai/glm-4.5"],
+        "model_ids": ["z-ai/glm-4.7", "z-ai/glm-4.5"],
         "api_key_env": "OPENROUTER_API_KEY",
         "sim_base_risk": 0.32,
         "cost_input_per_mtok": 0.5,
@@ -562,7 +562,7 @@ def call_openai_compatible(
     if not api_key:
         raise ValueError(f"Missing API key: {api_key_env}")
 
-    kwargs: Dict[str, object] = {"api_key": api_key}
+    kwargs: Dict[str, object] = {"api_key": api_key, "timeout": 60.0, "max_retries": 0}
     if base_url:
         kwargs["base_url"] = base_url
     if extra_headers:
@@ -726,6 +726,7 @@ def call_xai_native(
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
+        "User-Agent": "laboratory-round7/1.0",
     }
     request_body: Dict[str, object] = {
         "model": model_id,
