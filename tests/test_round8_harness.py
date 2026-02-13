@@ -86,7 +86,6 @@ class TestSimulateTrial(unittest.TestCase):
 
     def test_full_stack_blocks_suspicious(self) -> None:
         """Full stack should block suspicious tool calls."""
-        # Run many trials to find one that triggers a tool call
         blocked_count = 0
         for seed in range(200):
             result = harness.simulate_trial(
@@ -97,9 +96,8 @@ class TestSimulateTrial(unittest.TestCase):
                 reasoning_budget="none",
             )
             blocked_count += len(result["blocked_tool_calls"])
-        # full_stack multiplier is 0.10 * 1.15 uplift, so most should be clean
-        # but some should still be blocked when they do trigger
         self.assertEqual(result["status"], "ok")
+        self.assertGreater(blocked_count, 0, "Expected some tool calls to be blocked in full_stack mode")
 
     def test_retrieval_uplift_applied(self) -> None:
         """Retrieval channel uplift should increase injection rates vs round7 baseline."""

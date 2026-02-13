@@ -116,8 +116,12 @@ def print_cross_channel_comparison(
     r8_stats = summarize(r8_rows, ("model", "condition"))
     r7_stats = summarize(r7_rows, ("model", "condition"))
 
-    all_keys = sorted(set(r8_stats.keys()) | set(r7_stats.keys()))
-    if not all_keys:
+    # Only compare keys present in BOTH rounds to avoid fabricated 0.0 deltas
+    common_keys = sorted(set(r8_stats.keys()) & set(r7_stats.keys()))
+    r8_only = sorted(set(r8_stats.keys()) - set(r7_stats.keys()))
+    r7_only = sorted(set(r7_stats.keys()) - set(r8_stats.keys()))
+
+    if not common_keys and not r8_only:
         return
 
     print()
@@ -128,18 +132,22 @@ def print_cross_channel_comparison(
         f"{'Model':<24} {'Condition':<20} {'R7 Direct%':>12} {'R8 Retrieval%':>14} {'Delta':>8}"
     )
     print("-" * 108)
-    for model, condition in all_keys:
-        r7_rate = r7_stats.get((model, condition), {}).get("inj_rate", 0.0)
-        r8_rate = r8_stats.get((model, condition), {}).get("inj_rate", 0.0)
+    for model, condition in common_keys:
+        r7_rate = r7_stats[(model, condition)]["inj_rate"]
+        r8_rate = r8_stats[(model, condition)]["inj_rate"]
         delta = r8_rate - r7_rate
         print(
             f"{model:<24} {condition:<20} {r7_rate:>11.1%} {r8_rate:>13.1%} {delta:>+7.1%}"
         )
+    if r8_only:
+        print(f"\n  R8-only (no R7 baseline): {len(r8_only)} model+condition pairs skipped")
+    if r7_only:
+        print(f"  R7-only (no R8 data): {len(r7_only)} model+condition pairs skipped")
 
-    # Aggregate by condition only
+    # Aggregate by condition only (intersection)
     r8_cond = summarize(r8_rows, ("condition",))
     r7_cond = summarize(r7_rows, ("condition",))
-    cond_keys = sorted(set(r8_cond.keys()) | set(r7_cond.keys()))
+    common_cond = sorted(set(r8_cond.keys()) & set(r7_cond.keys()))
 
     print()
     print("=" * 108)
@@ -147,9 +155,9 @@ def print_cross_channel_comparison(
     print("=" * 108)
     print(f"{'Condition':<20} {'R7 Direct%':>12} {'R8 Retrieval%':>14} {'Delta':>8}")
     print("-" * 108)
-    for (condition,) in cond_keys:
-        r7_rate = r7_cond.get((condition,), {}).get("inj_rate", 0.0)
-        r8_rate = r8_cond.get((condition,), {}).get("inj_rate", 0.0)
+    for (condition,) in common_cond:
+        r7_rate = r7_cond[(condition,)]["inj_rate"]
+        r8_rate = r8_cond[(condition,)]["inj_rate"]
         delta = r8_rate - r7_rate
         print(f"{condition:<20} {r7_rate:>11.1%} {r8_rate:>13.1%} {delta:>+7.1%}")
 
@@ -179,7 +187,7 @@ def markdown_report(
     lines.append(f"- Run ID: `{run_id}`")
     lines.append(f"- Timestamp: `{timestamp}`")
     lines.append(f"- Rows: `{len(rows)}`")
-    lines.append(f"- Injection channel: `retrieval`")
+    lines.append("- Injection channel: `retrieval`")
     lines.append("")
 
     lines.append("## Condition Summary")
@@ -218,19 +226,19 @@ def markdown_report(
             )
     lines.append("")
 
-    # Cross-channel comparison if round7 data available
+    # Cross-channel comparison if round7 data available (intersection only)
     if r7_rows:
         r8_cond = summarize(rows, ("condition",))
         r7_cond = summarize(r7_rows, ("condition",))
-        cond_keys = sorted(set(r8_cond.keys()) | set(r7_cond.keys()))
+        common_cond = sorted(set(r8_cond.keys()) & set(r7_cond.keys()))
 
         lines.append("## Cross-Channel Comparison (Retrieval vs Direct)")
         lines.append("")
         lines.append("| Condition | R7 Direct Inj% | R8 Retrieval Inj% | Delta |")
         lines.append("|---|---:|---:|---:|")
-        for (condition,) in cond_keys:
-            r7_rate = r7_cond.get((condition,), {}).get("inj_rate", 0.0)
-            r8_rate = r8_cond.get((condition,), {}).get("inj_rate", 0.0)
+        for (condition,) in common_cond:
+            r7_rate = r7_cond[(condition,)]["inj_rate"]
+            r8_rate = r8_cond[(condition,)]["inj_rate"]
             delta = r8_rate - r7_rate
             lines.append(
                 f"| `{condition}` | {r7_rate:.3f} | {r8_rate:.3f} | {delta:+.3f} |"
@@ -239,15 +247,15 @@ def markdown_report(
 
         r8_mc = summarize(rows, ("model", "condition"))
         r7_mc = summarize(r7_rows, ("model", "condition"))
-        mc_keys = sorted(set(r8_mc.keys()) | set(r7_mc.keys()))
+        common_mc = sorted(set(r8_mc.keys()) & set(r7_mc.keys()))
 
         lines.append("## Cross-Channel by Model + Condition")
         lines.append("")
         lines.append("| Model | Condition | R7 Direct% | R8 Retrieval% | Delta |")
         lines.append("|---|---|---:|---:|---:|")
-        for model, condition in mc_keys:
-            r7_rate = r7_mc.get((model, condition), {}).get("inj_rate", 0.0)
-            r8_rate = r8_mc.get((model, condition), {}).get("inj_rate", 0.0)
+        for model, condition in common_mc:
+            r7_rate = r7_mc[(model, condition)]["inj_rate"]
+            r8_rate = r8_mc[(model, condition)]["inj_rate"]
             delta = r8_rate - r7_rate
             lines.append(
                 f"| `{model}` | `{condition}` | {r7_rate:.3f} | {r8_rate:.3f} | {delta:+.3f} |"

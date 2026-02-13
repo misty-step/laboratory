@@ -1163,7 +1163,7 @@ def run() -> None:
     )
 
     print(f"Starting round8 (RAG injection): mode={mode}, trials={total}")
-    print(f"Injection channel: retrieval (poisoned doc in position 2 of 3)")
+    print("Injection channel: retrieval (poisoned doc in position 2 of 3)")
     print(f"Models: {', '.join(selected_models)}")
     print(f"Payloads: {len(payload_items)} | Conditions: {len(selected_conditions)} | Trials per combo: {args.trials}")
     print(f"Reasoning axis models: {', '.join(reasoning_models) if reasoning_models else 'none'}")
