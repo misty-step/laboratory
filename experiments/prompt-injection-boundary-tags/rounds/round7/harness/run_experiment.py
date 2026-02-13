@@ -492,6 +492,8 @@ def simulate_trial(
 
 
 def _json_post(url: str, headers: Mapping[str, str], payload: Mapping[str, object]) -> Dict[str, object]:
+    if not url.startswith(("https://", "http://")):
+        raise ValueError(f"Invalid URL scheme: {url}")
     body = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(url=url, data=body, method="POST", headers=dict(headers))
     try:
@@ -516,7 +518,10 @@ def _json_post(url: str, headers: Mapping[str, str], payload: Mapping[str, objec
 def call_anthropic(model_id: str, system_prompt: str, user_message: str) -> Dict[str, object]:
     import anthropic
 
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    client = anthropic.Anthropic(
+        api_key=os.environ.get("ANTHROPIC_API_KEY"),
+        timeout=90.0,
+    )
     response = client.messages.create(
         model=model_id,
         max_tokens=1024,
@@ -556,7 +561,7 @@ def call_openai_compatible(
     base_url: str | None = None,
     extra_headers: Mapping[str, str] | None = None,
 ) -> Dict[str, object]:
-    from openai import OpenAI
+    from openai import BadRequestError, OpenAI
 
     api_key = os.environ.get(api_key_env)
     if not api_key:
@@ -587,7 +592,7 @@ def call_openai_compatible(
 
     try:
         response = client.chat.completions.create(**request)
-    except Exception as err:
+    except BadRequestError as err:
         if reasoning_budget in {"low", "high"} and "reasoning_effort" in str(err).lower():
             request.pop("reasoning_effort", None)
             response = client.chat.completions.create(**request)
@@ -658,7 +663,7 @@ def call_google_gemini(
     headers = {"Content-Type": "application/json"}
     try:
         response_json = _json_post(url, headers, request_body)
-    except Exception:
+    except RuntimeError:
         fallback_body = {
             "systemInstruction": {"parts": [{"text": system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": user_message}]}],
@@ -743,7 +748,7 @@ def call_xai_native(
 
     try:
         response_json = _json_post(url, headers, request_body)
-    except Exception as err:
+    except RuntimeError as err:
         if reasoning_budget in {"low", "high"} and "reasoning" in str(err).lower():
             request_body.pop("reasoning_effort", None)
             response_json = _json_post(url, headers, request_body)

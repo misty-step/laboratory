@@ -126,13 +126,13 @@ def write_bar_chart_svg(
 
     lines: list[str] = []
     lines.append(
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">'  # noqa: E501
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">'
     )
     lines.append('<rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>')
 
     # Title
     lines.append(
-        f'<text x="{margin_left}" y="34" font-family="ui-sans-serif, system-ui" font-size="20" fill="#111827">{_svg_escape(title)}</text>'  # noqa: E501
+        f'<text x="{margin_left}" y="34" font-family="ui-sans-serif, system-ui" font-size="20" fill="#111827">{_svg_escape(title)}</text>'
     )
 
     # Axes
@@ -157,7 +157,7 @@ def write_bar_chart_svg(
         )
 
     # Bars
-    for i, (label, v) in enumerate(zip(labels, values)):
+    for i, (label, v) in enumerate(zip(labels, values, strict=True)):
         bh = h_for(v)
         x = x_for(i)
         y = y0 - bh
@@ -167,14 +167,14 @@ def write_bar_chart_svg(
 
         # value label
         lines.append(
-            f'<text x="{x + bar_w / 2}" y="{y - 8}" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111827">{value_fmt.format(v)}</text>'  # noqa: E501
+            f'<text x="{x + bar_w / 2}" y="{y - 8}" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111827">{value_fmt.format(v)}</text>'
         )
 
         # x label (rotated)
         lx = x + bar_w / 2
         ly = y0 + 18
         lines.append(
-            f'<text x="{lx}" y="{ly}" text-anchor="end" transform="rotate(-35 {lx} {ly})" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111827">{_svg_escape(label)}</text>'  # noqa: E501
+            f'<text x="{lx}" y="{ly}" text-anchor="end" transform="rotate(-35 {lx} {ly})" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111827">{_svg_escape(label)}</text>'
         )
 
     lines.append("</svg>")
