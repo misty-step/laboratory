@@ -9,6 +9,7 @@
 | `round4` | Single-turn vs multi-turn context-poisoning benchmark | `round4/data/multiturn_results_latest.csv` | 3-turn escalation protocol (`benign -> subtle -> explicit`) over top-4 payload categories. |
 | `round5` | Security vs utility tradeoff benchmark | `round5/data/tradeoff_results_latest.csv` | Dual-metric frontier: injection rate vs benign-task utility. |
 | `round6` | Tool-call policy gate precision/recall eval | `round6/data/policy_eval_latest.csv` | Offline labeled corpus across 4 scorer policy configs. |
+| `round7` | Cross-model defense validation benchmark | `round7/data/cross_model_results_latest.csv` | 9-model defense-ablation matrix with optional reasoning-budget axis. |
 | `canonical` | Schema-normalized cross-round dataset | `canonical/runs_v1.csv` | Unified `prompt_injection_run_v1` format for aggregate analysis. |
 
 ## Invariants
@@ -17,3 +18,22 @@
 - Keep one script pair per active round (`harness/run_experiment.py`, `analysis/analyze.py`).
 - Preserve old harnesses for reproducibility; create new rounds instead of mutating historical logic.
 - Use `tools/normalize_prompt_injection_runs.py` to regenerate `canonical/runs_v1.csv`.
+
+## Common Budget Controls
+
+Rounds with live model calls expose shared budget flags:
+- `--max-cost-usd`
+- `--max-cost-per-trial-usd`
+- `--budget-mode hard|warn`
+- `--budget-report <path>`
+- `--budget-estimate-input-tokens`, `--budget-estimate-output-tokens`
+- `--budget-guard-input-tokens`, `--budget-guard-output-tokens`
+
+Current coverage: `round2`, `round2b`, `round3`, `round4`, `round5`, `round7`.
+
+## Mandatory Live Preflight
+
+- Live runs now enforce a non-optional preflight probe before the full trial matrix.
+- Preflight sends one minimal request per configured live model path (and per reasoning-budget path where applicable).
+- If any probe fails (for example invalid model ID, missing key, provider error), the harness exits before trial `1/N`.
+- Preflight cost is recorded in the shared budget controller and included in budget reports.
