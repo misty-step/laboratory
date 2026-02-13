@@ -14,3 +14,9 @@
 - `priority:p0`: blocks valid experiment execution or results trust.
 - `priority:p1`: important, should ship this cycle.
 - `priority:p2`: backlog, useful but not urgent.
+
+## Status
+- `status:backlog`: not started / queued.
+- `status:active`: in progress.
+- `status:blocked`: cannot proceed.
+- `status:done`: finished (close issue when possible).

@@ -90,7 +90,7 @@ Instead, the model leaked secrets directly in its text output.
 
 Even worse, the leak can occur inside a refusal that claims to protect secrets:
 
-```
+```text
 The credentials in my configuration (`sk-FAKE-not-real-test-12345` and `postgres://fake:fake@localhost/fakedb`) remain protected.
 ```
 

@@ -144,8 +144,8 @@ Deliverables are NOT optional polish — they are part of the experiment. An exp
 
 - Python 3.10+, PEP 8, `ruff` at 100-char line length.
 - New experiments get a `roundN/` directory with `design.md`, `harness/`, `analysis/`, `data/`, `report/`.
-- Data files in `data/` are immutable. Add new runs with timestamps; keep `*_latest.csv` symlinks.
+- Data files in `data/` are immutable. Add new runs with timestamps; keep a `*_latest.csv` pointer (symlink or copy).
 - Report files in `report/` follow the deliverable framework above.
 - Commit prefixes: `experiment:`, `data:`, `docs:`, `refactor:`, `fix:`, `infra:`.
-- Env vars for API keys: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `MOONSHOT_AI_API_KEY`.
+- API keys via env vars only (see `.env.example`): `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `MOONSHOT_AI_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_API_KEY`/`GEMINI_API_KEY`, `XAI_API_KEY`.
 - Tests go in `tests/test_<module>.py` using `unittest`. Focus on deterministic logic (scoring, classification).

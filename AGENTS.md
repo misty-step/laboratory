@@ -24,7 +24,7 @@
 
 ## Testing Guidelines
 - No full automated suite yet; run syntax checks and at least one analysis command per change.
-- For deterministic logic (scoring/classification), add `pytest` tests in `tests/test_<module>.py`.
+- For deterministic logic (scoring/classification), add `unittest` tests in `tests/test_<module>.py`.
 - Target strong patch confidence (around 80%+ on new logic), not global percentage chasing.
 
 ## Commit & Pull Request Guidelines
@@ -38,6 +38,6 @@
 - Add `area:*` and `priority:*` labels to keep backlog triage cheap.
 
 ## Security & Configuration Tips
-- Use env vars only: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `MOONSHOT_AI_API_KEY`.
+- Use env vars only (no secrets files). See `.env.example` (ex: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `MOONSHOT_AI_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_API_KEY`/`GEMINI_API_KEY`, `XAI_API_KEY`).
 - Never commit real secrets; test fixtures must remain fake.
 - `.env`, `.venv/`, `venv/`, and local cache artifacts must stay untracked.

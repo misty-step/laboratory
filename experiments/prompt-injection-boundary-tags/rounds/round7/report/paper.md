@@ -12,9 +12,9 @@ This round is a cross-model validation of defense ordering observed in prior rou
 
 ## Prior Art (gap framing)
 
-- AgentDojo: agent security benchmark; does not isolate delimiter layers as the primary axis.
-- InjecAgent: injection vulnerability focus; limited cross-provider defense ablation.
-- Provider system cards and safety guidance: provider-specific recommendations, not cross-provider ablation under a shared harness.
+- AgentDojo (Debenedetti et al., 2024): prompt injection benchmark for tool-using agents; does not isolate delimiter layers as the primary axis.
+- InjecAgent (Zhan et al., 2024): indirect prompt injection benchmark; limited cross-provider defense ablation under a shared harness.
+- Provider guidance (e.g., OpenAI instruction hierarchy; Anthropic prompt-injection defenses): recommends mitigations, but not cross-provider layer-by-layer ablations on the same task.
 
 ## Methodology
 
@@ -47,7 +47,12 @@ This round is a cross-model validation of defense ordering observed in prior rou
 - xAI: `grok-4.1-fast`
 - OpenRouter: `deepseek-v3.2`, `kimi-k2-thinking`, `qwen3-coder`, `minimax-m2.1`, `glm-4.7`
 
-A small “reasoning budget” axis is evaluated for `gpt-5.2` and `gemini-3-flash`.
+A small reasoning-budget axis is evaluated for two targets:
+
+- `gpt-5.2`: OpenAI `reasoning_effort=low|high`.
+- `gemini-3-flash`: Gemini `thinkingConfig.thinkingBudget=256|2048`.
+
+All other targets use `reasoning_budget=none`.
 
 ### Scoring
 
@@ -74,6 +79,32 @@ Aggregate injection rate by condition:
 | `instruction_tags` | 132 | 131 | 1 | 2.3% |
 | `full_stack` | 132 | 132 | 0 | 0.0% |
 
+
+Note: `instruction_tags` has `ERR=1` due to an OpenRouter timeout for `minimax-m2.1` on payload `context_confusion`. The 2.3% rate is computed over `OK=131`.
+
+Per-model raw vs tags-only (Phase 1, trials=1; N=12 payloads per model-budget):
+
+| Model | Budget | `raw` | `tags_only` | Delta |
+|---|---|---:|---:|---:|
+| `claude-sonnet-4.5` | `none` | 16.7% | 0.0% | -16.7% |
+| `deepseek-v3.2` | `none` | 25.0% | 33.3% | +8.3% |
+| `gemini-3-flash` | `low` | 8.3% | 0.0% | -8.3% |
+| `gemini-3-flash` | `high` | 8.3% | 0.0% | -8.3% |
+| `glm-4.7` | `none` | 16.7% | 0.0% | -16.7% |
+| `gpt-5.2` | `low` | 0.0% | 0.0% | +0.0% |
+| `gpt-5.2` | `high` | 0.0% | 0.0% | +0.0% |
+| `grok-4.1-fast` | `none` | 33.3% | 16.7% | -16.7% |
+| `kimi-k2-thinking` | `none` | 16.7% | 0.0% | -16.7% |
+| `minimax-m2.1` | `none` | 41.7% | 0.0% | -41.7% |
+| `qwen3-coder` | `none` | 41.7% | 50.0% | +8.3% |
+
+#### Phase 2 model selection (worst + anchors)
+
+Phase 2 runs `full_stack` only, trials=5, across 9 model-budget targets (12 payloads each):
+
+- Worst (high Phase 1 injection under weaker conditions): `minimax-m2.1`, `qwen3-coder`, `deepseek-v3.2`, `grok-4.1-fast`.
+- Anchors (frontier-provider coverage + budget axis): `claude-sonnet-4.5`, `gpt-5.2` (`low`/`high`), `gemini-3-flash` (`low`/`high`).
+
 ### Phase 2: `full_stack` only (trials=5)
 
 - Overall injection rate: 0.2% (1/540)
@@ -90,6 +121,10 @@ Observed failure mode: plain-text secret regurgitation without tool calls; can a
 2. Tags-only is not a safe default.
 
    While tags reduce injection in aggregate, per-model behavior is not monotonic and can worsen on some models.
+
+   Phase 1 examples (`raw` -> `tags_only`):
+   - `deepseek-v3.2`: 25.0% -> 33.3%
+   - `qwen3-coder`: 41.7% -> 50.0%
 
 3. Tool-call filtering reduces tool exfil but not output exfil.
 
@@ -108,4 +143,9 @@ Observed failure mode: plain-text secret regurgitation without tool calls; can a
 
 ## References
 
-TBD (add citations for AgentDojo, InjecAgent, and provider system cards).
+- Debenedetti, E. et al. (2024). *AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents.* NeurIPS 2024. arXiv:2406.13352.
+- Zhan, Q. et al. (2024). *InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated LLM Agents.* ACL 2024. arXiv:2403.02691.
+- Anthropic (2025). *Prompt Injection Defenses.* anthropic.com/research/prompt-injection-defenses
+- OpenAI (2024). *The Instruction Hierarchy.* openai.com/research/the-instruction-hierarchy
+- Google (2025). *Gemini API: Function calling.* ai.google.dev/gemini-api/docs/function-calling
+- Willison, S. (2025). *The Lethal Trifecta.* simonwillison.net

@@ -12,18 +12,20 @@ Every claim should be testable. Every run should be reproducible. Every result s
 
 ```text
 laboratory/
+├── docs/                 # schemas, labels, ADRs
 ├── experiments/
-│   └── prompt-injection-boundary-tags/
-│       ├── rounds/
-│       │   ├── round1/   # baseline (single-model, 72 trials)
-│       │   ├── round2/   # alternate harness (432 trials)
-│       │   ├── round2b/  # realistic harness + analysis (324 trials)
-│       │   ├── round3/   # defense-ablation matrix
-│       │   └── round4/   # single-turn vs multi-turn benchmark
-│       │   ├── round5/   # security vs utility tradeoff
-│       │   ├── round6/   # tool-call policy gate eval
-│       │   └── round7/   # cross-model defense validation
-│       └── shared/       # reusable assets (e.g., wrappers)
+│   ├── prompt-injection-boundary-tags/
+│   │   ├── rounds/
+│   │   │   ├── round1/   # baseline (single-model, 72 trials)
+│   │   │   ├── round2/   # alternate harness (432 trials)
+│   │   │   ├── round2b/  # realistic harness + analysis (324 trials)
+│   │   │   ├── round3/   # defense-ablation matrix
+│   │   │   ├── round4/   # single-turn vs multi-turn benchmark
+│   │   │   ├── round5/   # security vs utility tradeoff
+│   │   │   ├── round6/   # tool-call policy gate eval
+│   │   │   └── round7/   # cross-model defense validation
+│   │   └── shared/       # reusable assets (e.g., wrappers)
+│   └── opencode-agent-models/  # coding-agent benchmark harness
 ├── templates/            # new experiment skeletons
 ├── tools/                # shared utilities
 └── papers/               # finalized publications
@@ -39,19 +41,18 @@ source .venv/bin/activate
 python3 -m pip install -e .
 ```
 
+For live runs, set API keys via env vars (see `.env.example`).
+
 Run canonical Round 2B workflow:
 
 ```bash
-python3 experiments/prompt-injection-boundary-tags/rounds/round2b/harness/run_experiment.py
-python3 experiments/prompt-injection-boundary-tags/rounds/round2b/analysis/analyze.py
-python3 tools/calibrate_round2b_scorer.py
+make run-r2b analyze-r2b calibrate-r2b
 ```
 
 Normalize and analyze cross-round historical data with one schema:
 
 ```bash
-python3 tools/normalize_prompt_injection_runs.py
-python3 tools/analyze_prompt_injection_runs.py
+make normalize-runs analyze-runs
 ```
 
 Back-compat entrypoints remain available at repo root:
@@ -60,6 +61,13 @@ Back-compat entrypoints remain available at repo root:
 python3 run_experiment_r2.py
 python3 analyze_r2.py
 ```
+
+## Docs
+
+- `docs/ARCHITECTURE.md`
+- `docs/RUN_SCHEMA.md`
+- `docs/ISSUE_LABELS.md`
+- `docs/adr/0000-template.md`
 
 ## CI Smoke Checks
 
@@ -88,7 +96,7 @@ To block merges on failures, set branch protection to require the `ci-smoke` wor
 
 ## Contributing
 
-Open GitHub issues using the experiment or bug templates. Use labels to separate research backlog from codebase defects.
+See `CONTRIBUTING.md`.
 
 ## License
 
