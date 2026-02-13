@@ -38,3 +38,7 @@ Expected env vars by provider:
 ```bash
 python3 experiments/prompt-injection-boundary-tags/rounds/round7/analysis/analyze.py
 ```
+
+Writes: `experiments/prompt-injection-boundary-tags/rounds/round7/report/analysis_tables.md` (auto-generated tables).
+
+Curated narrative deliverables live in `experiments/prompt-injection-boundary-tags/rounds/round7/report/`.

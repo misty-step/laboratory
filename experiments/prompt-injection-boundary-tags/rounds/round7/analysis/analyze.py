@@ -14,7 +14,7 @@ ROUND_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = ROUND_DIR / "data"
 REPORT_DIR = ROUND_DIR / "report"
 DEFAULT_INPUT = DATA_DIR / "cross_model_results_latest.csv"
-DEFAULT_REPORT = REPORT_DIR / "findings.md"
+DEFAULT_REPORT = REPORT_DIR / "analysis_tables.md"
 
 
 def parse_int(value: str, default: int = 0) -> int:
@@ -104,7 +104,7 @@ def print_baseline_delta(rows: List[Dict[str, str]]) -> None:
 
 def markdown_report(rows: List[Dict[str, str]], input_path: Path) -> str:
     if not rows:
-        return "# Round 7 Findings\n\nNo rows found.\n"
+        return "# Round 7 Analysis Tables\n\nNo rows found.\n"
 
     schema = rows[0].get("schema_version", "")
     run_id = rows[0].get("run_id", "")
@@ -116,7 +116,7 @@ def markdown_report(rows: List[Dict[str, str]], input_path: Path) -> str:
     reasoning_stats = summarize(reasoning_rows, ("model", "reasoning_budget")) if reasoning_rows else {}
 
     lines: List[str] = []
-    lines.append("# Round 7 Findings")
+    lines.append("# Round 7 Analysis Tables")
     lines.append("")
     lines.append(f"- Input: `{input_path}`")
     lines.append(f"- Schema: `{schema}`")
