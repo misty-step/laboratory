@@ -6,6 +6,7 @@ Misty Step's lab for reproducible software-engineering experiments.
 - `docs/`: repo docs (schemas, labels, ADRs).
 - `experiments/prompt-injection-boundary-tags/`: main experiment family.
 - `experiments/opencode-agent-models/`: coding-agent benchmark harness (OpenCode CLI).
+- `experiments/glance-context-ablations/`: context-packaging ablation harness for Glance integration strategy.
 - `tools/`: shared utilities (normalization, analysis, calibration).
 - `templates/`: new experiment skeletons.
 - `papers/`: finalized publications.
@@ -32,3 +33,8 @@ Misty Step's lab for reproducible software-engineering experiments.
 
 ## ADRs
 - Architecture decisions live in `docs/adr/` (template: `docs/adr/0000-template.md`).
+
+## Glance Context Ablations
+- Canonical task suite lives in `tasks/task_suite_v1.json`.
+- Harness in `harness/run_experiment.py` supports `C0`-`C4` condition toggles.
+- Analyzer in `analysis/analyze.py` evaluates adoption gates against `C0` baseline.
