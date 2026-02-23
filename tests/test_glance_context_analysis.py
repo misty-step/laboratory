@@ -1,8 +1,10 @@
 """Tests for Glance context ablation analysis logic."""
 from __future__ import annotations
 
+import csv
 import importlib.util
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -97,6 +99,78 @@ def make_condition_rows(
             )
         )
     return rows
+
+
+class TestRelativeChange(unittest.TestCase):
+    def test_both_zero(self) -> None:
+        self.assertEqual(analysis._relative_change(0.0, 0.0), 0.0)
+
+    def test_positive_candidate_zero_baseline(self) -> None:
+        self.assertEqual(analysis._relative_change(5.0, 0.0), 1.0)
+
+    def test_negative_candidate_zero_baseline(self) -> None:
+        self.assertEqual(analysis._relative_change(-3.0, 0.0), 1.0)
+
+    def test_normal_increase(self) -> None:
+        self.assertAlmostEqual(analysis._relative_change(1.5, 1.0), 0.5)
+
+    def test_normal_decrease(self) -> None:
+        self.assertAlmostEqual(analysis._relative_change(0.8, 1.0), -0.2)
+
+
+class TestQualityCostRatio(unittest.TestCase):
+    def test_zero_cost_positive_quality(self) -> None:
+        self.assertEqual(analysis._quality_cost_ratio(0.1, 0.0), float("inf"))
+
+    def test_zero_cost_zero_quality(self) -> None:
+        self.assertEqual(analysis._quality_cost_ratio(0.0, 0.0), float("inf"))
+
+    def test_zero_cost_negative_quality(self) -> None:
+        self.assertEqual(analysis._quality_cost_ratio(-0.1, 0.0), 0.0)
+
+    def test_negative_cost_positive_quality(self) -> None:
+        self.assertEqual(analysis._quality_cost_ratio(0.1, -0.05), float("inf"))
+
+    def test_normal_division(self) -> None:
+        self.assertAlmostEqual(analysis._quality_cost_ratio(0.2, 0.4), 0.5)
+
+
+class TestLoadRows(unittest.TestCase):
+    def test_empty_csv_raises(self) -> None:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as fh:
+            writer = csv.DictWriter(fh, fieldnames=list(analysis.INT_FIELDS | analysis.FLOAT_FIELDS) + ["condition"])
+            writer.writeheader()
+            tmp_path = Path(fh.name)
+        try:
+            with self.assertRaises(ValueError, msg="No rows loaded"):
+                analysis.load_rows(tmp_path)
+        finally:
+            tmp_path.unlink(missing_ok=True)
+
+    def test_valid_csv_loads_and_coerces(self) -> None:
+        fields = ["condition", "task_tier", "task_success", "tests_passed",
+                  "context_utilized", "total_tokens", "runtime_seconds",
+                  "estimated_cost_usd", "pr_readiness_score",
+                  "judge_maintainability", "judge_test_quality"]
+        row = {
+            "condition": "C0", "task_tier": "T1", "task_success": "1",
+            "tests_passed": "1", "context_utilized": "0", "total_tokens": "5000",
+            "runtime_seconds": "900.5", "estimated_cost_usd": "0.015",
+            "pr_readiness_score": "0.72", "judge_maintainability": "0.68",
+            "judge_test_quality": "0.70",
+        }
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as fh:
+            writer = csv.DictWriter(fh, fieldnames=fields)
+            writer.writeheader()
+            writer.writerow(row)
+            tmp_path = Path(fh.name)
+        try:
+            rows = analysis.load_rows(tmp_path)
+            self.assertEqual(len(rows), 1)
+            self.assertIsInstance(rows[0]["task_success"], int)
+            self.assertIsInstance(rows[0]["runtime_seconds"], float)
+        finally:
+            tmp_path.unlink(missing_ok=True)
 
 
 class TestAdoptionDecision(unittest.TestCase):

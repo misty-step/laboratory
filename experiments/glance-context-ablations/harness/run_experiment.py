@@ -467,7 +467,10 @@ def main() -> int:
     tiers = set(parse_csv_arg(args.tiers, set(TIER_ORDER), "--tiers"))
     repo_types = set(parse_csv_arg(args.repo_types, set(REPO_TYPE_ORDER), "--repo-types"))
 
-    tasks = load_task_suite(Path(args.task_suite))
+    task_suite_path = Path(args.task_suite)
+    if not task_suite_path.exists():
+        raise SystemExit(f"Task suite does not exist: {task_suite_path}")
+    tasks = load_task_suite(task_suite_path)
     tasks = filter_tasks(tasks, tiers=tiers, repo_types=repo_types, max_tasks=args.max_tasks)
     if not tasks:
         raise SystemExit("No tasks selected after filters. Adjust --tiers/--repo-types/--max-tasks.")
