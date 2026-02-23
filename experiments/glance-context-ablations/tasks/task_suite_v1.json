@@ -1,0 +1,175 @@
+{
+  "schema_version": "glance_task_suite_v1",
+  "generated_at": "2026-02-20",
+  "notes": "Balanced suite across tiers and repo archetypes for C0-C4 context ablations.",
+  "tasks": [
+    {
+      "task_id": "t1_library_flag_parser_fix",
+      "title": "Fix CLI flag parsing regression in export command",
+      "tier": "T1",
+      "repo_type": "library_cli",
+      "repo_slug": "misty-step/cli-kit",
+      "repo_locator": "n/a",
+      "summary": "Single-module bug fix in argument normalization.",
+      "acceptance_checks": [
+        "existing command behavior preserved",
+        "new regression test added",
+        "no public API break"
+      ]
+    },
+    {
+      "task_id": "t1_service_auth_middleware_fix",
+      "title": "Patch missing auth guard for one API route",
+      "tier": "T1",
+      "repo_type": "service_backend",
+      "repo_slug": "misty-step/identity-service",
+      "repo_locator": "n/a",
+      "summary": "Small middleware fix in one route file.",
+      "acceptance_checks": [
+        "route returns 401 without session",
+        "route returns 200 with valid session",
+        "existing route tests stay green"
+      ]
+    },
+    {
+      "task_id": "t1_fullstack_glance_empty_state_fix",
+      "title": "Fix empty-state rendering bug in Glance dashboard",
+      "tier": "T1",
+      "repo_type": "fullstack_app",
+      "repo_slug": "misty-step/glance",
+      "repo_locator": "../glance",
+      "summary": "Small UI fix with one backend query guard.",
+      "acceptance_checks": [
+        "empty state renders when no cards exist",
+        "no console errors on first load",
+        "snapshot test updated"
+      ]
+    },
+    {
+      "task_id": "t1_monorepo_config_path_fix",
+      "title": "Fix wrong package path in monorepo build config",
+      "tier": "T1",
+      "repo_type": "monorepo",
+      "repo_slug": "misty-step/platform",
+      "repo_locator": "n/a",
+      "summary": "Single-file config correction in workspace graph.",
+      "acceptance_checks": [
+        "build graph resolves package",
+        "affected package builds",
+        "no unrelated workspace changes"
+      ]
+    },
+    {
+      "task_id": "t2_library_batch_api_feature",
+      "title": "Add batched lookup API to shared client library",
+      "tier": "T2",
+      "repo_type": "library_cli",
+      "repo_slug": "misty-step/client-core",
+      "repo_locator": "n/a",
+      "summary": "Multi-file feature with docs and tests.",
+      "acceptance_checks": [
+        "new batch API supports partial failures",
+        "unit tests cover success and error paths",
+        "README usage example updated"
+      ]
+    },
+    {
+      "task_id": "t2_service_idempotency_feature",
+      "title": "Implement idempotency-key support for create endpoint",
+      "tier": "T2",
+      "repo_type": "service_backend",
+      "repo_slug": "misty-step/orders-service",
+      "repo_locator": "n/a",
+      "summary": "Feature touches routing, persistence, and tests.",
+      "acceptance_checks": [
+        "duplicate requests reuse first response",
+        "key expires by configured TTL",
+        "integration test covers replay scenario"
+      ]
+    },
+    {
+      "task_id": "t2_fullstack_glance_filter_persistence",
+      "title": "Add persisted filter presets to Glance views",
+      "tier": "T2",
+      "repo_type": "fullstack_app",
+      "repo_slug": "misty-step/glance",
+      "repo_locator": "../glance",
+      "summary": "Feature spans UI state, API contract, and persistence.",
+      "acceptance_checks": [
+        "user can save and re-apply filters",
+        "preset survives browser reload",
+        "access control blocks cross-user preset reads"
+      ]
+    },
+    {
+      "task_id": "t2_monorepo_shared_logging_layer",
+      "title": "Introduce shared structured logging utility package",
+      "tier": "T2",
+      "repo_type": "monorepo",
+      "repo_slug": "misty-step/platform",
+      "repo_locator": "n/a",
+      "summary": "Cross-package feature with migration in two services.",
+      "acceptance_checks": [
+        "new shared logger package published in workspace",
+        "two consumer services migrated",
+        "log schema docs updated"
+      ]
+    },
+    {
+      "task_id": "t3_library_error_model_refactor",
+      "title": "Refactor library error model to discriminated union",
+      "tier": "T3",
+      "repo_type": "library_cli",
+      "repo_slug": "misty-step/client-core",
+      "repo_locator": "n/a",
+      "summary": "Cross-module refactor with backward-compat adapters.",
+      "acceptance_checks": [
+        "all legacy errors mapped to new model",
+        "public API migration notes included",
+        "branch coverage for mapping layer >= 80%"
+      ]
+    },
+    {
+      "task_id": "t3_service_permission_architecture",
+      "title": "Migrate service permissions to policy engine",
+      "tier": "T3",
+      "repo_type": "service_backend",
+      "repo_slug": "misty-step/identity-service",
+      "repo_locator": "n/a",
+      "summary": "Architectural change across middleware and handlers.",
+      "acceptance_checks": [
+        "old permission checks removed",
+        "policy engine enforces equivalent constraints",
+        "authorization regression suite passes"
+      ]
+    },
+    {
+      "task_id": "t3_fullstack_glance_navigation_reframe",
+      "title": "Reframe Glance navigation around workspace contexts",
+      "tier": "T3",
+      "repo_type": "fullstack_app",
+      "repo_slug": "misty-step/glance",
+      "repo_locator": "../glance",
+      "summary": "Cross-module full-stack refactor with routing and data slicing changes.",
+      "acceptance_checks": [
+        "workspace context switch updates all dependent panels",
+        "legacy routes redirect cleanly",
+        "e2e smoke covers context switch flow"
+      ]
+    },
+    {
+      "task_id": "t3_monorepo_domain_boundary_cleanup",
+      "title": "Split monorepo domain package into deep modules",
+      "tier": "T3",
+      "repo_type": "monorepo",
+      "repo_slug": "misty-step/platform",
+      "repo_locator": "n/a",
+      "summary": "High-complexity architecture cleanup across package boundaries.",
+      "acceptance_checks": [
+        "new package boundaries are documented",
+        "cyclic dependencies eliminated",
+        "affected services pass contract tests"
+      ]
+    }
+  ]
+}

@@ -26,6 +26,7 @@ laboratory/
 │   │   │   └── round7/   # cross-model defense validation
 │   │   └── shared/       # reusable assets (e.g., wrappers)
 │   └── opencode-agent-models/  # coding-agent benchmark harness
+│   └── glance-context-ablations/ # Glance context-packaging ablation harness
 ├── templates/            # new experiment skeletons
 ├── tools/                # shared utilities
 └── papers/               # finalized publications
@@ -93,6 +94,7 @@ To block merges on failures, set branch protection to require the `ci-smoke` wor
 | Experiment | Status | Summary |
 |---|---|---|
 | [prompt-injection-boundary-tags](experiments/prompt-injection-boundary-tags/) | R1-R7 implemented | Tests boundary-tagging, defense layering, multi-turn escalation risk, policy filtering, and cross-model defense validation. |
+| [glance-context-ablations](experiments/glance-context-ablations/) | Scaffolded (pilot harness + analyzer) | Measures causal impact of Glance context strategy (`C0`-`C4`) on coding-task success, readiness, runtime, and token/cost frontier. |
 
 ## Contributing
 
