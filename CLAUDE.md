@@ -4,10 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Misty Step's computational laboratory for reproducible software-engineering experiments. Two active experiment families:
+Misty Step's computational laboratory for reproducible, hypothesis-driven experiments on AI system behavior. Three active experiment families:
 
-1. **Prompt-injection boundary tags** — measuring how boundary-tagging and layered defenses change prompt-injection success rates in agent workflows.
-2. **OpenCode agent model evaluation** — benchmarking which LLMs effectively act as coding agents (edit files, commit changes, pass tests) vs get stuck in analysis-paralysis loops.
+1. **Prompt-injection boundary tags** — measuring how boundary-tagging and layered defenses change prompt-injection success rates in agent workflows. 8 rounds complete.
+2. **Glance context ablations** — isolating whether Glance artifact presence and injection strategy (C0-C4) affect coding-agent task quality, across repo archetypes and task tiers.
+3. **OpenCode agent model evaluation** — benchmarking which LLMs effectively act as coding agents (edit files, commit changes, pass tests) vs get stuck in analysis-paralysis loops.
 
 ## Commands
 
@@ -146,6 +147,6 @@ Deliverables are NOT optional polish — they are part of the experiment. An exp
 - New experiments get a `roundN/` directory with `design.md`, `harness/`, `analysis/`, `data/`, `report/`.
 - Data files in `data/` are immutable. Add new runs with timestamps; keep a `*_latest.csv` pointer (symlink or copy).
 - Report files in `report/` follow the deliverable framework above.
-- Commit prefixes: `experiment:`, `data:`, `docs:`, `refactor:`, `fix:`, `infra:`.
+- Commit prefixes: `experiment:`, `data:`, `analysis:`, `report:`, `docs:`, `refactor:`, `fix:`, `infra:`.
 - API keys via env vars only (see `.env.example`): `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `MOONSHOT_AI_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_API_KEY`/`GEMINI_API_KEY`, `XAI_API_KEY`.
 - Tests go in `tests/test_<module>.py` using `unittest`. Focus on deterministic logic (scoring, classification).
