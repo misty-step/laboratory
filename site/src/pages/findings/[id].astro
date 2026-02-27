@@ -1,0 +1,63 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const findings = await getCollection("findings");
+  return findings.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <article class="max-w-4xl mx-auto px-6 pt-16 pb-24">
+    <header class="mb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-xs font-mono uppercase tracking-wider text-amber-500">
+          {entry.data.scope}
+        </span>
+        <span class="text-xs text-stone-400 dark:text-stone-500">
+          {entry.data.date}
+        </span>
+        <span class="text-xs font-mono bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-2 py-0.5 rounded">
+          {entry.data.trials.toLocaleString()} trials
+        </span>
+        <span class="text-xs font-mono bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-2 py-0.5 rounded">
+          {entry.data.models} models
+        </span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
+        {entry.data.title}
+      </h1>
+      <p class="text-lg text-stone-600 dark:text-stone-400 mt-3">
+        {entry.data.headline}
+      </p>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <footer class="mt-16 pt-8 border-t border-stone-200 dark:border-stone-800">
+      <div class="flex items-center gap-4">
+        <a
+          href="/findings"
+          class="text-sm text-amber-500 hover:text-amber-400 transition-colors"
+        >
+          &larr; All findings
+        </a>
+        <a
+          href="/data"
+          class="text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
+        >
+          Download data &rarr;
+        </a>
+      </div>
+    </footer>
+  </article>
+</BaseLayout>

@@ -1,0 +1,41 @@
+---
+title: "Prompt Injection Defense Ablation"
+description: "Measuring how boundary-tagging and layered defenses change prompt-injection success rates in agent workflows."
+status: "active"
+rounds: 8
+totalTrials: 3580
+---
+
+## Overview
+
+How do you defend an LLM agent against prompt injection? Not by hoping the model is smart enough — by stacking defense layers and measuring what each one contributes.
+
+This experiment family progressively adds defense layers (boundary tags, system instructions, nonce tags, tool-call policy filtering) and measures the marginal contribution of each. Unlike vulnerability benchmarks, we measure **defense effectiveness**.
+
+## Rounds
+
+| Round | Focus | N | Models | Status |
+|-------|-------|---|--------|--------|
+| R1 | Baseline | 73 | 1 | Complete |
+| R2 | Realistic conditions | 324 | 3 | Complete |
+| R2b | Scoring calibration | 324 | 3 | Complete |
+| R3-R5 | Designed, not executed | — | — | Skipped |
+| R6 | Tool-call policy filter | 360 | — | Complete |
+| R7 | Cross-model validation | 1,202 | 9 | Complete |
+| R8 | Retrieval channel (RAG) | 1,981 | 9 | Complete |
+
+## Defense Conditions
+
+Five progressive layers, each additive:
+
+1. **Raw** — no defense
+2. **Tags only** — boundary markers around untrusted content
+3. **Instruction only** — system prompt telling the model to ignore untrusted content
+4. **Instruction + tags** — both together
+5. **Full stack** — instruction + nonce tags + tool-call policy filter
+
+## Key Results
+
+Full-stack defense reduces injection success to &lt;0.2% across all models and channels. The system instruction contributes ~50% reduction; boundary tags contribute ~40% additional when paired with instruction; the tool-call filter catches residual risk.
+
+[Read the full synthesis &rarr;](/findings/defense-ablation-synthesis)

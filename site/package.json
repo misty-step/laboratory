@@ -1,0 +1,30 @@
+{
+  "name": "misty-step-lab",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync-content": "bash scripts/sync-content.sh",
+    "extract-data": "python3 scripts/extract-chart-data.py",
+    "prebuild": "npm run sync-content && npm run extract-data"
+  },
+  "dependencies": {
+    "astro": "^5.17.1",
+    "@astrojs/mdx": "^4.3.0",
+    "@astrojs/react": "^4.2.1",
+    "@astrojs/sitemap": "^3.3.1",
+    "@observablehq/plot": "^0.6.16",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "tailwindcss": "^4.1.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0"
+  }
+}

@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Data" description="Download open datasets from Misty Step Laboratory experiments.">
+  <section class="max-w-4xl mx-auto px-6 pt-16 pb-24">
+    <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-100 mb-2">
+      Data
+    </h1>
+    <p class="text-stone-500 dark:text-stone-400 mb-10">
+      All experiment data is open, immutable, and version-controlled. MIT licensed.
+    </p>
+
+    <div class="space-y-6">
+      <!-- Canonical cross-round dataset -->
+      <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <h2 class="text-lg font-semibold text-stone-900 dark:text-stone-100">
+            Canonical Cross-Round Dataset
+          </h2>
+          <span class="text-xs font-mono bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded">
+            primary
+          </span>
+        </div>
+        <p class="text-sm text-stone-600 dark:text-stone-400 mb-4">
+          Normalized dataset spanning all rounds. Each row is one injection trial with model,
+          condition, payload category, score (0-3), and metadata.
+        </p>
+        <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-sm mb-4">
+          <dt class="text-stone-500 dark:text-stone-400">Format</dt>
+          <dd class="text-stone-900 dark:text-stone-100 font-mono">CSV</dd>
+          <dt class="text-stone-500 dark:text-stone-400">Rows</dt>
+          <dd class="text-stone-900 dark:text-stone-100 font-mono">3,580</dd>
+          <dt class="text-stone-500 dark:text-stone-400">Rounds</dt>
+          <dd class="text-stone-900 dark:text-stone-100">R1, R2, R2b, R6, R7, R8</dd>
+          <dt class="text-stone-500 dark:text-stone-400">Models</dt>
+          <dd class="text-stone-900 dark:text-stone-100">12 across 6 providers</dd>
+        </dl>
+        <a
+          href="https://github.com/misty-step/laboratory/tree/master/canonical"
+          class="text-sm text-amber-500 hover:text-amber-400 transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Browse on GitHub &rarr;
+        </a>
+      </div>
+
+      <!-- Per-round datasets -->
+      <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-3">
+          Per-Round Datasets
+        </h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 mb-4">
+          Raw data from individual experiment rounds. Immutable after collection.
+        </p>
+        <div class="space-y-3">
+          {[
+            { round: "R7", name: "Cross-Model Validation (Direct)", rows: "1,202", path: "rounds/round7/data" },
+            { round: "R8", name: "Retrieval Channel (RAG)", rows: "1,981", path: "rounds/round8/data" },
+            { round: "R6", name: "Tool-Call Policy Filter", rows: "360", path: "rounds/round6/data" },
+            { round: "R2", name: "Realistic Conditions", rows: "324", path: "rounds/round2/data" },
+            { round: "R1", name: "Baseline", rows: "73", path: "rounds/round1/data" },
+          ].map(({ round, name, rows, path }) => (
+            <div class="flex items-center justify-between text-sm">
+              <div class="flex items-center gap-3">
+                <span class="font-mono text-amber-500 w-8">{round}</span>
+                <span class="text-stone-900 dark:text-stone-100">{name}</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-stone-400 dark:text-stone-500 font-mono">{rows} rows</span>
+                <a
+                  href={`https://github.com/misty-step/laboratory/tree/master/experiments/prompt-injection-boundary-tags/${path}`}
+                  class="text-amber-500 hover:text-amber-400 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub &rarr;
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Reproducibility -->
+      <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-3">
+          Reproducibility
+        </h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400 mb-4">
+          All experiments run in deterministic simulation mode (seeded RNG, no API keys required).
+        </p>
+        <pre class="bg-stone-900 text-stone-100 p-4 rounded-lg text-sm font-mono overflow-x-auto"><code>git clone https://github.com/misty-step/laboratory.git
+cd laboratory
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e .
+make run-r7     # deterministic simulation
+make analyze-r7 # produces report/</code></pre>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

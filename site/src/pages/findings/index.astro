@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const findings = await getCollection("findings", ({ data }) => !data.draft);
+const sorted = findings.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<BaseLayout title="Findings" description="All published experiment findings from Misty Step Laboratory.">
+  <section class="max-w-4xl mx-auto px-6 pt-16 pb-24">
+    <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-100 mb-2">
+      Findings
+    </h1>
+    <p class="text-stone-500 dark:text-stone-400 mb-10">
+      Published results from our experiment program. Each finding links to its underlying data.
+    </p>
+
+    <div class="grid gap-6">
+      {sorted.map((finding) => (
+        <a
+          href={`/findings/${finding.id}`}
+          class="block border border-stone-200 dark:border-stone-800 rounded-lg p-6 hover:border-amber-400 dark:hover:border-amber-500 transition-colors group"
+        >
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-xs font-mono uppercase tracking-wider text-amber-500">
+              {finding.data.scope}
+            </span>
+            <span class="text-xs text-stone-400 dark:text-stone-500">
+              {finding.data.date}
+            </span>
+          </div>
+          <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 group-hover:text-amber-500 transition-colors">
+            {finding.data.title}
+          </h2>
+          <p class="text-stone-600 dark:text-stone-400 mt-2">
+            {finding.data.description}
+          </p>
+          <div class="flex gap-2 mt-4">
+            {finding.data.tags.map((tag: string) => (
+              <span class="text-xs font-mono bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-0.5 rounded">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
