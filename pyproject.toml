@@ -8,6 +8,7 @@ dependencies = [
   "anthropic>=0.42.0",
   "openai>=1.40.0",
   "scipy>=1.10.0",
+  "matplotlib>=3.8.0",
 ]
 
 [build-system]
