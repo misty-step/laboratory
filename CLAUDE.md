@@ -118,6 +118,38 @@ Every experiment follows: **Hypothesis → Methodology → Data → Analysis →
 - Analysis includes statistical tests where appropriate
 - Conclusions address the hypothesis directly (confirmed / refuted / inconclusive + why)
 
+### Simulation integrity
+
+**Simulation is scaffolding, not evidence.** `--simulate` exists for local development and
+harness testing only. It must never appear in deliverables as measurement.
+
+Rules:
+- Simulation data CANNOT appear in any deliverable artifact as a finding.
+  It may appear in an appendix labeled "Projection under simulation assumptions."
+- Cross-round synthesis: audit `mode` column in every CSV before combining datasets.
+  If any rows contain `mode=simulate`, that round is excluded from evidence.
+- Before writing any deliverable, confirm: "Could this finding have come out differently
+  if models behaved differently?" If no (because multipliers determined it) — it is not a
+  finding. Do not write it as one.
+- Harness multipliers (`CONDITION_MULTIPLIER`, `sim_base_risk`) must be in `design.md`.
+
+### Experimental design requirements
+
+Before `design.md` is approved, it must specify:
+
+1. **Data collection mode**: Live API calls only. Simulation is not permitted as primary
+   data for any experiment intended to produce findings.
+2. **Sample size justification**: N per cell must achieve 80% power to detect the smallest
+   effect size worth detecting. Document the power calculation.
+3. **Factorial design**: When testing A × B interaction, use factorial cells (both on/off),
+   not cumulative stacking. Stacking confounds marginal effects.
+4. **Payload coverage**: Payload set must be drawn from a defined sampling frame or validated
+   against an external reference. Handcrafted convenience sets must be labeled as exploratory.
+5. **Preregistration**: Hypotheses and analysis plan documented in `design.md` before data
+   collection. Post-hoc analysis is labeled as exploratory.
+6. **Baseline costs**: Estimate API spend before running. Document model × condition × trial
+   count × average cost/call. Get approval for spend > $50.
+
 ### Deliverable framework
 
 Every completed experiment produces ALL of the following artifacts in `report/`:

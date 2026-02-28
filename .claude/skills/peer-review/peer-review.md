@@ -121,6 +121,12 @@ Tasks:
 5. Verify that the scoring methodology described matches the actual scorer behavior
    (read shared/scoring/scorer.py if referenced).
 6. Check for data leakage between train/test conditions (if applicable).
+7. **Simulation audit (MANDATORY, check first):** For every CSV in `data/`, check the `mode` column.
+   If `mode=simulate` exists in any row:
+   a. Is this disclosed prominently in every deliverable? (FATAL if no)
+   b. Is simulated data mixed with live data in any result table? (FATAL if yes)
+   c. Do the findings merely replicate the multiplier ordering? (FATAL — circular)
+   d. Is simulation presented as empirical evidence? (FATAL)
 
 For each discrepancy, rate: FATAL / MAJOR / MINOR / NOTE
 Output a structured markdown report with your recomputed values."
