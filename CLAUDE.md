@@ -126,8 +126,8 @@ harness testing only. It must never appear in deliverables as measurement.
 Rules:
 - Simulation data CANNOT appear in any deliverable artifact as a finding.
   It may appear in an appendix labeled "Projection under simulation assumptions."
-- Cross-round synthesis: audit `mode` column in every CSV before combining datasets.
-  If any rows contain `mode=simulate`, that round is excluded from evidence.
+- Cross-round synthesis: audit `mode` column in every CSV (`data/*.csv`, not just `*_latest`)
+  before combining datasets. If any rows contain `mode=simulate`, that round is excluded from evidence.
 - Before writing any deliverable, confirm: "Could this finding have come out differently
   if models behaved differently?" If no (because multipliers determined it) — it is not a
   finding. Do not write it as one.
