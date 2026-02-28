@@ -1,62 +1,17 @@
 ---
 title: "Defense Stacking Against Prompt Injection"
-description: "Cross-round synthesis: 5 defense layers reduce injection success from ~20% to <0.2% across 12 models."
+description: "Under peer review — findings pending re-run with live data only."
 date: "2026-02-27"
 scope: "synthesis"
-trials: 3580
-models: 12
-headline: "Full-stack defense reduces prompt injection to <0.2%"
+trials: 0
+models: 0
+headline: "Experiment program restarted — findings coming"
 tags: ["prompt-injection", "defense-ablation", "agent-security"]
+draft: true
 ---
 
-## Key Finding
+This experiment is under revision. The cross-round synthesis previously published here
+mixed live data (Round 7) with simulated data (Round 8) without disclosure. The artifacts
+have been archived. A new experiment with live-only data is in progress.
 
-Stacking five defense layers reduces prompt injection success from ~20-31% to &lt;0.2% across all tested models and injection channels. Each layer contributes measurably; the full stack is model-agnostic.
-
-## Defense Layer Effectiveness
-
-| Defense | Injection Success Rate |
-|---------|----------------------|
-| No defense | 19-31% |
-| Tags only | 9-16% |
-| Instruction only | 5-10% |
-| Instruction + tags | 2-9% |
-| Full stack | &lt;0.2% |
-
-## Six Rounds of Evidence
-
-**Round 1** (N=73, 1 model) — Null result. System prompt too protective.
-
-**Round 2** (N=324, 3 models) — Tags reduce injection 31% to 10%. Chi-square = 24.22, p = 0.000006. Gradual escalation most dangerous (56-89% raw success).
-
-**Round 2b** (N=324, re-scored) — Scoring calibration eliminated 7 false positives (2.2% FPR to 0%). Kimi K2.5 raw vulnerability revised from 22.2% to 5.6%.
-
-**Round 6** (N=360, synthetic corpus) — Tool-call policy filter achieves 92.6% recall at 0% FPR (F1 = 0.96).
-
-**Round 7** (N=1,202, 9 models, direct channel) — Defense ordering confirmed: raw 18.9% to tags 9.1% to instruction 5.3% to instruction+tags 2.3% to full_stack 0.0%. Phase 2 full_stack: 0.2% (1/540).
-
-**Round 8** (N=1,981, 9 models, RAG channel) — Defense ordering transfers to retrieval. Retrieval shows ~20% higher absolute rates at intermediate levels; full_stack eliminates difference.
-
-## Surprising Results
-
-- **Tags without instructions can increase vulnerability.** DeepSeek V3.2 and Qwen3-Coder showed +8 percentage points with tags_only vs raw.
-- **Classical attacks are obsolete.** "IGNORE ALL PREVIOUS INSTRUCTIONS" achieves 0% success. Gradual escalation and social engineering are the real threats.
-- **Reasoning budgets don't help defense.** GPT-5.2 low-budget 6.7% vs high-budget 5.6%; not statistically significant.
-- **Model selection matters less than defense selection.** 6x vulnerability variance at baseline; all converge to &lt;0.2% under full defense.
-
-## Practical Implications
-
-1. **Deploy all layers.** Cost: 20-50 tokens of system prompt, &lt;1ms for tool-call filtering. Payoff: near-elimination of injection risk.
-2. **Never deploy tags without instructions.** On some models, boundary markers signal content salience, making injection easier.
-3. **Add output secret scanning.** The single full-stack failure was a model leaking a secret *inside its refusal text*.
-4. **Don't trust reasoning budgets for security.** More thinking time didn't reduce injection susceptibility.
-
-## Charts
-
-<img src="/charts/defense_stacking.svg" alt="Defense stacking effectiveness across conditions" class="chart-wide" />
-
-<img src="/charts/model_vulnerability_heatmap.svg" alt="Model vulnerability heatmap by defense condition" class="chart-wide" />
-
-<img src="/charts/payload_effectiveness.svg" alt="Payload category effectiveness by defense condition" class="chart-wide" />
-
-<img src="/charts/tool_filter_precision_recall.svg" alt="Tool-call filter precision/recall by configuration" class="chart-wide" />
+See the [methodology page](/about) for the lab's data integrity standards.

@@ -4,78 +4,46 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 <BaseLayout
   title="Paper"
-  description="Defense Stacking Against Prompt Injection in LLM Agent Workflows: A Progressive Ablation Study"
+  description="No paper published yet — first experiment in progress."
 >
-  <article class="max-w-4xl mx-auto px-6 pt-16 pb-24 prose">
-    <header class="mb-12 not-prose">
+  <article class="max-w-4xl mx-auto px-6 pt-16 pb-24">
+    <header class="mb-12">
       <p class="text-sm font-mono uppercase tracking-widest text-amber-500 mb-4">
         Technical Paper
       </p>
       <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
-        Defense Stacking Against Prompt Injection in LLM Agent Workflows
+        No paper published yet
       </h1>
-      <p class="text-lg text-stone-500 dark:text-stone-400 mt-2">
-        A Progressive Ablation Study
+      <p class="text-lg text-stone-500 dark:text-stone-400 mt-4 max-w-2xl">
+        Papers are published after live data collection completes and peer review passes.
+        The first experiment is in progress.
       </p>
-      <div class="flex items-center gap-4 mt-4 text-sm text-stone-500 dark:text-stone-400">
-        <span>Misty Step Laboratory</span>
-        <span>&middot;</span>
-        <span>February 2026</span>
-        <span>&middot;</span>
-        <span>v1.0</span>
-      </div>
-      <div class="mt-4 flex gap-3">
+      <div class="mt-6 flex gap-4">
         <a
-          href="https://github.com/misty-step/laboratory/blob/master/experiments/prompt-injection-boundary-tags/report/paper.md"
+          href="/about"
           class="text-sm text-amber-500 hover:text-amber-400 transition-colors"
+        >
+          Our methodology &rarr;
+        </a>
+        <a
+          href="https://github.com/misty-step/laboratory"
+          class="text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
           target="_blank"
           rel="noopener noreferrer"
         >
-          View on GitHub &rarr;
-        </a>
-        <a
-          href="/data"
-          class="text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
-        >
-          Download data &rarr;
+          GitHub repository &rarr;
         </a>
       </div>
     </header>
 
-    <p>
-      The full paper is available in our
-      <a href="https://github.com/misty-step/laboratory/blob/master/experiments/prompt-injection-boundary-tags/report/paper.md">
-        GitHub repository</a>.
-      Below is the abstract and key findings. For the interactive version with charts, see the
-      <a href="/findings/defense-ablation-synthesis">synthesis findings page</a>.
-    </p>
-
-    <h2>Abstract</h2>
-    <p>
-      We present findings from a six-round experimental program measuring prompt-injection defense
-      effectiveness in LLM agent workflows. Unlike prior benchmarks that evaluate model vulnerability
-      or individual mitigations, we isolate the <strong>marginal contribution of each defense
-      layer</strong> through progressive ablation: no defense (raw), boundary tags only, system
-      instruction only, instruction + tags, and full stack (instruction + nonce tags + tool-call
-      policy filter). Across 3,580 prompt-injection trials spanning 12 models, 12 payload categories,
-      and 2 injection channels (direct and retrieval), we find:
-    </p>
-    <ol>
-      <li>System instructions alone reduce injection success by ~50%.</li>
-      <li>Boundary tags alone are unreliable &mdash; they increase injection on some models.</li>
-      <li>Instruction + tags achieve ~93% reduction through synergy.</li>
-      <li>Full-stack defense reduces injection to &lt;0.2% across all tested conditions.</li>
-      <li>Defense ordering transfers across injection channels.</li>
-    </ol>
-
-    <h2>Citation</h2>
-    <pre><code>@article{'{'}mistystep2026defense,
-  title={'{'}Defense Stacking Against Prompt Injection in LLM Agent Workflows:
-         A Progressive Ablation Study{'}'},
-  author={'{'}Misty Step Laboratory{'}'},
-  year={'{'}2026{'}'},
-  month={'{'}February{'}'},
-  url={'{'}https://lab.mistystep.com/paper{'}'}
-{'}'}</code></pre>
+    <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-6 text-sm text-stone-500 dark:text-stone-400">
+      <p class="font-semibold text-stone-700 dark:text-stone-300 mb-2">Why no paper?</p>
+      <p>
+        A previous experiment mixed simulated and live data without disclosure. Rather than
+        publish compromised findings, we archived those artifacts and restarted with stricter
+        data integrity standards. All future papers will cite only live API call data,
+        peer-reviewed before publication.
+      </p>
+    </div>
   </article>
 </BaseLayout>

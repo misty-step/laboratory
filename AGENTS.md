@@ -59,6 +59,21 @@ make normalize-runs && make analyze-runs
 - Target ~80% patch confidence on new logic; don't chase global percentages.
 - Never break simulate mode — it must run without API keys.
 
+## Branch & PR Workflow (MANDATORY)
+
+**Never commit directly to master.** All work happens on a branch with a PR.
+
+```bash
+git checkout -b <prefix>/<short-description>   # branch before any work
+# ... make commits ...
+gh pr create --title "..." --body "..."        # PR when done
+```
+
+Branch naming: `<commit-prefix>/<description>` — e.g. `docs/simulation-integrity`,
+`experiment/r9-design`, `infra/website-honest-state`.
+
+PRs must be merged via GitHub (squash or merge commit). Do not push directly to master.
+
 ## Commit Conventions
 
 Typed prefixes — use exactly one per commit:
@@ -98,6 +113,11 @@ Every experiment follows: **Hypothesis → Methodology → Data → Analysis →
 - Always default to `--simulate` (deterministic, seeded, no API keys)
 - `--live` requires explicit flag; document exact model + API config used
 - Data files in `data/` are immutable — add timestamped copies, never overwrite
+- **Simulation integrity (blocking):** Check `data/*_latest.csv` for `mode` column before
+  writing any deliverable. `mode=simulate` means live data does not exist. Stop. Run `--live`
+  first. Do not write findings from simulated data.
+- Cross-round synthesis only combines rounds with matching `mode=live`. Simulated rounds
+  are not evidence.
 
 **Deliverable framework** — every completed experiment produces ALL of these in `report/`:
 

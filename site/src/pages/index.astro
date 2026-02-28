@@ -1,9 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
-
-const findings = await getCollection("findings", ({ data }) => !data.draft);
-const totalTrials = findings.reduce((sum, f) => sum + f.data.trials, 0);
 ---
 
 <BaseLayout title="Home" description="Reproducible, hypothesis-driven experiments on AI system behavior. Open science from Misty Step.">
@@ -18,84 +14,43 @@ const totalTrials = findings.reduce((sum, f) => sum + f.data.trials, 0);
       <p class="mt-6 text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl">
         We run hypothesis-driven experiments measuring how LLM agents respond to adversarial
         input, defense configurations, and context strategies. All data open. All experiments
-        reproducible.
+        reproducible. Findings published only from live data.
       </p>
-    </div>
-
-    <!-- Hero stats -->
-    <div class="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6">
-      <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-4">
-        <p class="text-3xl font-bold font-mono text-stone-900 dark:text-stone-100">
-          {totalTrials.toLocaleString()}
-        </p>
-        <p class="text-sm text-stone-500 dark:text-stone-400 mt-1">total trials</p>
-      </div>
-      <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-4">
-        <p class="text-3xl font-bold font-mono text-stone-900 dark:text-stone-100">12</p>
-        <p class="text-sm text-stone-500 dark:text-stone-400 mt-1">models tested</p>
-      </div>
-      <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-4">
-        <p class="text-3xl font-bold font-mono text-stone-900 dark:text-stone-100">5</p>
-        <p class="text-sm text-stone-500 dark:text-stone-400 mt-1">defense layers</p>
-      </div>
-      <div class="border border-stone-200 dark:border-stone-800 rounded-lg p-4">
-        <p class="text-3xl font-bold font-mono text-amber-500">
-          &lt;0.2%
-        </p>
-        <p class="text-sm text-stone-500 dark:text-stone-400 mt-1">injection rate (full stack)</p>
+      <div class="mt-8 flex items-center gap-4">
+        <a
+          href="/about"
+          class="inline-block bg-amber-500 hover:bg-amber-400 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors"
+        >
+          Our methodology &rarr;
+        </a>
+        <a
+          href="https://github.com/misty-step/laboratory"
+          class="text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View on GitHub
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Headline chart -->
-  <section class="max-w-6xl mx-auto px-6 pb-16">
-    <div class="border border-stone-200 dark:border-stone-800 rounded-xl p-6 bg-white dark:bg-stone-900">
-      <h2 class="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">
-        Defense stacking reduces injection to near-zero
-      </h2>
-      <img
-        src="/charts/defense_stacking.svg"
-        alt="Defense stacking effectiveness: injection success drops from ~20% (raw) to <0.2% (full stack)"
-        class="w-full"
-        loading="lazy"
-      />
-    </div>
-  </section>
-
-  <!-- Latest findings -->
+  <!-- Status -->
   <section class="max-w-6xl mx-auto px-6 pb-24">
-    <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-6">
-      Latest findings
-    </h2>
-    <div class="grid gap-4">
-      {findings
-        .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-        .map((finding) => (
-          <a
-            href={`/findings/${finding.id}`}
-            class="block border border-stone-200 dark:border-stone-800 rounded-lg p-5 hover:border-amber-400 dark:hover:border-amber-500 transition-colors group"
-          >
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <h3 class="font-semibold text-stone-900 dark:text-stone-100 group-hover:text-amber-500 transition-colors">
-                  {finding.data.title}
-                </h3>
-                <p class="text-sm text-stone-500 dark:text-stone-400 mt-1">
-                  {finding.data.description}
-                </p>
-              </div>
-              <div class="flex gap-2 shrink-0">
-                <span class="text-xs font-mono bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-2 py-1 rounded">
-                  {finding.data.trials.toLocaleString()} trials
-                </span>
-                <span class="text-xs font-mono bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 px-2 py-1 rounded">
-                  {finding.data.models} models
-                </span>
-              </div>
-            </div>
-          </a>
-        ))
-      }
+    <div class="border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/10 rounded-xl p-8">
+      <p class="text-sm font-mono uppercase tracking-widest text-amber-500 mb-3">
+        Status
+      </p>
+      <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-2">
+        First experiment in progress
+      </h2>
+      <p class="text-stone-600 dark:text-stone-400 max-w-xl">
+        The lab is open. We're designing the next experiment. Findings will be published
+        here once live data collection is complete and peer review passes.
+      </p>
+      <p class="mt-4 text-sm text-stone-500 dark:text-stone-500">
+        Subscribe for findings &rarr; <span class="font-mono">lab@mistystep.com</span>
+      </p>
     </div>
   </section>
 </BaseLayout>

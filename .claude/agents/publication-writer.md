@@ -171,6 +171,10 @@ Before marking deliverables complete:
 
 ## Constraints
 
+- GATE (runs before anything else): Read all `data/*.csv` files (not just `*_latest.csv` — rounds
+  may store only timestamped files). Count rows where `mode=simulate` across all CSVs.
+  If any exist, write only: "⚠️ This round has no live data. Run `python3 harness/run_experiment.py --live`
+  before writing deliverables." Then stop. Do not write findings.md, paper.md, or any artifact.
 - Do NOT fabricate statistics — derive from actual CSV data
 - Do NOT assert claims not supported by the data
 - Acknowledge inconclusive results honestly; don't spin them
