@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup check check-wrappers smoke-analyze ci-smoke test run-r1 analyze-r1 run-r2 run-r2b analyze-r2b calibrate-r2b run-r3 analyze-r3 run-r4 analyze-r4 run-r5 analyze-r5 run-r6 analyze-r6 run-r7 analyze-r7 run-r8 analyze-r8 run-glance-context analyze-glance-context normalize-runs analyze-runs run-opencode analyze-opencode
+.PHONY: setup check check-wrappers smoke-analyze ci-smoke test run-r1 analyze-r1 run-r2 run-r2b analyze-r2b calibrate-r2b run-r3 analyze-r3 run-r4 analyze-r4 run-r5 analyze-r5 run-r6 analyze-r6 run-r7 analyze-r7 run-r8 analyze-r8 run-glance-context analyze-glance-context normalize-runs analyze-runs run-opencode analyze-opencode run-ablation-phase1 run-ablation-phase2 analyze-ablation dry-run-ablation
 
 setup:
 	$(PYTHON) -m venv .venv
@@ -8,6 +8,10 @@ setup:
 
 check:
 	$(PYTHON) -m py_compile \
+		experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1/harness/run_experiment.py \
+		experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1/harness/utility_scorer.py \
+		experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1/harness/adaptive_fuzzer.py \
+		experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1/analysis/analyze.py \
 		run_experiment_r2.py \
 		analyze_r2.py \
 		experiments/prompt-injection-boundary-tags/run_experiment.py \
@@ -130,3 +134,19 @@ run-opencode:
 
 analyze-opencode:
 	cd experiments/opencode-agent-models && ./analyze.sh
+
+dry-run-ablation:
+	cd experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1 && \
+	  $(PYTHON) harness/run_experiment.py --dry-run
+
+run-ablation-phase1:
+	cd experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1 && \
+	  $(PYTHON) harness/run_experiment.py --live --phase 1 --budget-max 50
+
+run-ablation-phase2:
+	cd experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1 && \
+	  $(PYTHON) harness/run_experiment.py --live --phase 2 --budget-max 30
+
+analyze-ablation:
+	cd experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1 && \
+	  $(PYTHON) analysis/analyze.py
