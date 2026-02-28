@@ -1,0 +1,104 @@
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = [
+    "E",
+    "F",
+    "W",
+    "B",
+    "C",
+    "I",
+    "Q",
+    "T",
+]
+ignore = []
+extend-ignore = []
+exclude = [
+    ".eggs/*",
+    "*.eggs/*",
+    "build/*",
+    "dist/*",
+    "venv/*",
+]
+per-file-ignores = {}
+show-source = true
+fix = true
+fix-only = []
+ignore-init-module-imports = false
+max-line-length = 88
+max-doc-length = null
+max-complexity = 10
+
+[tool.ruff.isort]
+known-first-party = []
+known-third-party = []
+known-local-folder = []
+import-order-style = "PEP8"
+order-by-type = true
+force-sort-within-sections = true
+force-alphabetical-sort = false
+force-alphabetical-sort-within-sections = true
+force-grid-wrap = 0
+force-single-line = false
+force-single-line-imports = false
+force-multi-line = false
+force-multi-line-imports = false
+force-sort-exports = false
+force-star-sort = false
+include-trailing-comma = true
+lines-after-imports = -1
+lines-between-imports = -1
+lines-between-types = -1
+combine-as-imports = false
+combine-straight-imports = false
+combine-type-imports = false
+section-default = "THIRDPARTY"
+section-order = [
+    "STDLIB",
+    "THIRDPARTY",
+    "FIRSTPARTY",
+    "LOCALFOLDER",
+]
+only-sections = false
+required-imports = []
+remove-imports = []
+remove-redundant-aliases = false
+use-parentheses = true
+ensure-newline-before-comments = true
+ignore-whitespace = false
+ignore-whitespace-after-comment = false
+ignore-whitespace-after-import = false
+ignore-whitespace-before-comment = false
+ignore-whitespace-before-import = false
+ignore-whitespace-between-import-type = false
+ignore-whitespace-between-import-type-and-import = false
+ignore-whitespace-between-import-type-and-imports = false
+ignore-whitespace-between-imports = false
+ignore-whitespace-between-sections = false
+ignore-whitespace-between-section-and-imports = false
+ignore-whitespace-between-section-and-section = false
+ignore-whitespace-between-section-and-comment = false
+ignore-whitespace-between-comment-and-section = false
+ignore-whitespace-between-comment-and-import = false
+ignore-whitespace-between-comment-and-imports = false
+ignore-whitespace-between-comment-and-comment = false
+ignore-whitespace-between-import-and-section = false
+ignore-whitespace-between-import-and-imports = false
+ignore-whitespace-between-import-and-comment = false
+ignore-whitespace-between-imports-and-section = false
+ignore-whitespace-between-imports-and-import = false
+ignore-whitespace-between-imports-and-comment = false
+ignore-whitespace-between-imports-and-imports = false
+ignore-whitespace-between-comment-and-comment = false
+ignore-whitespace-between-comment-and-import = false
+ignore-whitespace-between-comment-and-section = false
+ignore-whitespace-between-comment-and-imports = false
+ignore-whitespace-between-section-and-comment = false
+ignore-whitespace-between-section-and-import = false
+ignore-whitespace-between-section-and-imports = false
+ignore-whitespace-between-section-and-section = false
+ignore-whitespace-between-import-type-and-comment = false
+ignore-whitespace-between-import-type-and-section = false
+ignore-whitespace-between-import-type-and-import = false
+ignore-whitespace-between-import-type-and-imports = false
+ignore-whitespace-between-import-type-and-import-type = false
