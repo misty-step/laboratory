@@ -107,7 +107,7 @@ def run_chi_square(data: dict[str, list[int]]) -> dict[str, Any]:
     import numpy as np
 
     conditions = sorted(data.keys())
-    # Build 2xK contingency table: rows = [success (>=2), failure (<2)]
+    # Build Kx2 contingency table: rows = conditions, cols = [success, failure]
     table = []
     for cond in conditions:
         values = data[cond]
@@ -372,7 +372,7 @@ def compute_utility_summary(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         cond_rows = by_condition.get(cond, [])
         if not cond_rows:
             continue
-        utility_scores = [r["utility_score"] for r in cond_rows if r.get("utility_score")]
+        utility_scores = [r["utility_score"] for r in cond_rows if r.get("utility_score") is not None]
         false_refusals = [r.get("false_refusal", False) for r in cond_rows]
         n = len(cond_rows)
         mean_utility = sum(utility_scores) / len(utility_scores) if utility_scores else 0.0

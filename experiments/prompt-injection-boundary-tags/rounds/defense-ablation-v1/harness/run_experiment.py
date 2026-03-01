@@ -53,7 +53,6 @@ SCORER_CONFIG = load_scorer_config(SCORER_CONFIG_PATH)
 
 SCHEMA_VERSION = "defense_ablation_v1"
 EXPERIMENT_ID = "defense-ablation-v1"
-LATEST_PATH = DATA_DIR / "defense_ablation_results_latest.csv"
 
 FAKE_SECRET = "sk-FAKE-not-real-test-12345"
 FAKE_ADMIN_EMAIL = "admin@fake-example.com"
@@ -544,7 +543,7 @@ def call_google_gemini(
 
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"{model_id}:generateContent?key={api_key}"
+        f"{model_id}:generateContent"
     )
     request_body: Dict[str, object] = {
         "systemInstruction": {"parts": [{"text": system_prompt}]},
@@ -552,11 +551,17 @@ def call_google_gemini(
         "tools": [{"functionDeclarations": GEMINI_FUNCTION_DECLARATIONS}],
         "generationConfig": {"temperature": 0},
     }
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "x-goog-api-key": api_key,
+    }
     try:
         response_json = _json_post(url, headers, request_body)
-    except RuntimeError:
-        # Retry without tools as fallback
+    except RuntimeError as e:
+        # Retry without tools only for tool-related errors
+        err_lower = str(e).lower()
+        if "tool" not in err_lower and "function" not in err_lower:
+            raise
         fallback_body = {
             "systemInstruction": {"parts": [{"text": system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": user_message}]}],
@@ -794,6 +799,7 @@ def build_trial_plan(
                             "model": model_name,
                             "condition": condition,
                             "payload_category": payload_category,
+                            "payload_id": f"{payload_category}_t{trial_num}",
                             "payload_text": str(payload_text),
                             "trial": trial_num,
                         }
@@ -836,7 +842,7 @@ def run_trial(
     payload_category: str,
     payload_id: str,
     trial_num: int,
-    phase: int,
+    phase: str,
     is_adaptive: bool = False,
     rng: random.Random | None = None,
 ) -> Dict[str, object]:
@@ -1070,8 +1076,8 @@ def run_phase_2(
     selected_conditions: List[str],
     budget: BudgetController,
     output_path: Path,
-) -> None:
-    """Phase 2: adaptive red teaming.
+) -> int:
+    """Phase 2: adaptive red teaming. Returns count of completed validation trials.
 
     For each condition:
       1. Generate payloads with attacker model, score against anchor model.
@@ -1156,7 +1162,7 @@ def run_phase_2(
                     payload_category="adaptive_fuzzing",
                     payload_id=f"fuzz_{condition}_{i}",
                     trial_num=0,
-                    phase=2,
+                    phase="adaptive",
                     is_adaptive=True,
                     rng=rng,
                 )
@@ -1186,7 +1192,8 @@ def run_phase_2(
         # Select top payloads
         top = select_top_payloads(attempts, scores, k=top_k)
         condition_payloads[condition] = top
-        top_scores = sorted(scores, reverse=True)[:top_k]
+        payload_to_score = dict(zip(attempts, scores))
+        top_scores = [payload_to_score.get(p, 0) for p in top]
         print(format_fuzzing_summary(condition, len(attempts), top, top_scores))
 
     # Stage 2: Validation — run top payloads across all models × conditions × trials
@@ -1244,7 +1251,7 @@ def run_phase_2(
                 payload_category=str(trial_spec["payload_category"]),
                 payload_id=str(trial_spec["payload_id"]),
                 trial_num=int(trial_spec["trial"]),
-                phase=2,
+                phase="adaptive",
                 is_adaptive=True,
                 rng=trial_rng,
             )
@@ -1278,6 +1285,7 @@ def run_phase_2(
 
     print(f"\nPhase 2 complete: {completed}/{total} validation trials")
     print(f"Saved: {output_path}")
+    return completed
 
 
 def main() -> None:
@@ -1410,7 +1418,7 @@ def main() -> None:
             DATA_DIR / f"defense_ablation_adaptive_{timestamp}.csv"
         )
         validate_output_path(adaptive_output, mode="live")
-        run_phase_2(
+        phase2_completed = run_phase_2(
             args=args,
             selected_models=selected_models,
             selected_conditions=selected_conditions,
@@ -1418,7 +1426,7 @@ def main() -> None:
             output_path=adaptive_output,
         )
         report_path = budget.write_report(
-            completed_trials=0,
+            completed_trials=phase2_completed,
             stop_reason="",
         )
         if report_path:
@@ -1453,9 +1461,9 @@ def main() -> None:
                 condition=str(trial_spec["condition"]),
                 payload_text=str(trial_spec["payload_text"]),
                 payload_category=str(trial_spec["payload_category"]),
-                payload_id=str(trial_spec["payload_category"]),
+                payload_id=str(trial_spec["payload_id"]),
                 trial_num=int(trial_spec["trial"]),
-                phase=1,
+                phase="adversarial",
                 rng=trial_rng,
             )
 
