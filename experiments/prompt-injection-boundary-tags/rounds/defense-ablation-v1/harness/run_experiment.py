@@ -23,7 +23,7 @@ if hasattr(sys.stdout, "reconfigure"):
 ROUND_DIR = Path(__file__).resolve().parent.parent
 EXPERIMENT_DIR = ROUND_DIR.parent.parent
 DATA_DIR = ROUND_DIR / "data"
-PAYLOAD_PATH = ROUND_DIR.parent / "round2b" / "payloads" / "payloads.json"
+PAYLOAD_PATH = ROUND_DIR / "payloads" / "payloads.json"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 if str(EXPERIMENT_DIR) not in sys.path:
