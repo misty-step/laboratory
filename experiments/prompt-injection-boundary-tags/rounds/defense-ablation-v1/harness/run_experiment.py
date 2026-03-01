@@ -434,6 +434,7 @@ def call_anthropic(
     response = client.messages.create(
         model=model_id,
         max_tokens=1024,
+        temperature=0,
         system=system_prompt,
         tools=ANTHROPIC_TOOLS,
         messages=[{"role": "user", "content": user_message}],
@@ -1208,7 +1209,7 @@ def run_phase_2(
 
     if not all_adaptive_payloads:
         print("No adaptive payloads generated. Skipping validation.")
-        return
+        return 0
 
     # Build validation trial plan
     validation_plan: List[Dict[str, object]] = []
