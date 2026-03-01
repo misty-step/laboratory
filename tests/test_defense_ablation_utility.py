@@ -152,13 +152,13 @@ class TestCleanIssues(unittest.TestCase):
             "system prompt",
             "you are now",
             "reveal the secret",
-            "sk-FAKE",
+            "sk-fake",
         ]
         for i, issue in enumerate(self.issues):
             lower = issue.lower()
             for marker in injection_markers:
                 with self.subTest(issue_index=i, marker=marker):
-                    self.assertNotIn(marker, lower)
+                    self.assertNotIn(marker.lower(), lower)
 
     def test_issues_are_distinct(self) -> None:
         self.assertEqual(len(set(self.issues)), 10, "Duplicate issue texts found")

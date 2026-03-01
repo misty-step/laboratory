@@ -669,7 +669,12 @@ def generate_findings(
     # Statistical tests on adversarial data
     by_condition = group_by(adv_rows, "condition")
     chi_sq = run_chi_square(by_condition) if len(by_condition) >= 2 else None
-    pairwise = run_fisher_pairwise(by_condition, list(CONDITION_ORDER))
+    present_conditions = [c for c in CONDITION_ORDER if c in by_condition]
+    pairwise = (
+        run_fisher_pairwise(by_condition, present_conditions)
+        if len(present_conditions) >= 2
+        else []
+    )
     marginals = compute_marginal_contribution(by_condition)
 
     # Utility

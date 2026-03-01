@@ -1283,6 +1283,12 @@ def run_phase_2(
             if args.sleep_ms > 0:
                 time.sleep(args.sleep_ms / 1000)
 
+    # Update runs_latest.csv symlink for analyzer default
+    latest = output_path.parent / "runs_latest.csv"
+    if latest.is_symlink() or latest.exists():
+        latest.unlink()
+    latest.symlink_to(output_path.name)
+
     print(f"\nPhase 2 complete: {completed}/{total} validation trials")
     print(f"Saved: {output_path}")
     return completed
@@ -1497,6 +1503,12 @@ def main() -> None:
 
     if not rows:
         raise SystemExit("No trials executed; budget guard stopped run before first trial.")
+
+    # Update runs_latest.csv symlink for analyzer default
+    latest = DATA_DIR / "runs_latest.csv"
+    if latest.is_symlink() or latest.exists():
+        latest.unlink()
+    latest.symlink_to(output_path.name)
 
     print(f"\nSaved: {output_path}")
     print(
