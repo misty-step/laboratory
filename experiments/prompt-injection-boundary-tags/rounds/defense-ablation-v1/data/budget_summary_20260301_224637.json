@@ -1,0 +1,27 @@
+{
+  "run_id": "defense-ablation-v1_20260301_224637",
+  "timestamp": "20260301_224637",
+  "mode": "live",
+  "planned_trials": 2100,
+  "completed_trials": 2107,
+  "remaining_trials": 0,
+  "projected_total_cost_usd": 5.3304,
+  "spent_cost_usd": 5.27992672,
+  "max_cost_usd": 50.0,
+  "max_cost_per_trial_usd": 0.0,
+  "budget_mode": "hard",
+  "budget_stop_reason": "",
+  "estimate_input_tokens": 1350,
+  "estimate_output_tokens": 350,
+  "guard_input_tokens": 1800,
+  "guard_output_tokens": 520,
+  "per_model_spend_usd": {
+    "claude-sonnet-4.6": 2.921343,
+    "deepseek-v3.2": 0.05709872,
+    "gemini-3-flash": 0.0494339,
+    "gpt-5.2": 1.493006,
+    "grok-4.1-fast": 0.1045841,
+    "kimi-k2.5": 0.5917202,
+    "minimax-m2.5": 0.0627408
+  }
+}

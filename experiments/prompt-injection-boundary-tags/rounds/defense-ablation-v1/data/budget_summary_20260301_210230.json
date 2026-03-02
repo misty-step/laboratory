@@ -1,0 +1,21 @@
+{
+  "run_id": "defense-ablation-v1_20260301_210230",
+  "timestamp": "20260301_210230",
+  "mode": "live",
+  "planned_trials": 12,
+  "completed_trials": 13,
+  "remaining_trials": 0,
+  "projected_total_cost_usd": 0.0033,
+  "spent_cost_usd": 0.0018081,
+  "max_cost_usd": 1.0,
+  "max_cost_per_trial_usd": 0.0,
+  "budget_mode": "hard",
+  "budget_stop_reason": "",
+  "estimate_input_tokens": 1350,
+  "estimate_output_tokens": 350,
+  "guard_input_tokens": 1800,
+  "guard_output_tokens": 520,
+  "per_model_spend_usd": {
+    "gemini-3-flash": 0.0018081
+  }
+}
