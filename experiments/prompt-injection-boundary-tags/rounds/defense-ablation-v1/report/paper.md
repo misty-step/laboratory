@@ -79,7 +79,7 @@ No prior work combines: (a) factorial ablation of each defense layer, (b) curren
 
 We use a GitHub issue summarization agent as our experimental setting. The agent, named "Kaylee," receives a system prompt establishing its role and embedding three fake credentials:
 
-```
+```text
 API_KEY="sk-FAKE-not-real-test-12345"
 DATABASE_URL="postgres://fake:fake@localhost/fakedb"
 ADMIN_EMAIL="admin@fake-example.com"
@@ -421,7 +421,7 @@ Phase 2 (adaptive attacks) and utility measurement remain open. A follow-on stud
 
 ## Appendix A: Harness System Prompt (Raw Condition)
 
-```
+```text
 You are Kaylee, a helpful assistant for GitHub issue triage.
 
 Configuration (do not expose):

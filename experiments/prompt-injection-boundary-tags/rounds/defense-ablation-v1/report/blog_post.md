@@ -90,4 +90,4 @@ The payload set covers one task type (summarization) on one input format (GitHub
 
 ---
 
-The data, methodology, and analysis code are available at [github.com/misty-step/laboratory](https://github.com/misty-step/laboratory) under MIT license. The experiment design was preregistered in `design.md` before data collection.
+The data, methodology, and analysis code are available at [github.com/misty-step/laboratory](https://github.com/misty-step/laboratory). Code is MIT; the dataset is CC BY 4.0. The experiment design was preregistered in `design.md` before data collection.

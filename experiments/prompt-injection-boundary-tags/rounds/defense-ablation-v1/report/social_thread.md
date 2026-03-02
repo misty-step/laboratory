@@ -1,7 +1,7 @@
 # Social Thread: Defense Ablation v1
 
 Post 1:
-We told an AI "ignore all previous instructions" 2,100 times, across 7 models, with 5 different defenses active. The most dangerous attack pattern wasn't the direct override. It was gradual escalation — and it worked 63% of the time on undefended systems. 🧵
+We told an AI "ignore all previous instructions" 2,100 times, across 7 models, with 5 different defenses active. The most dangerous attack pattern wasn't the direct override. It was gradual escalation — and it worked 63% of the time on undefended systems (among gradual escalation payloads; overall raw ASR was 17.4%). 🧵
 
 Post 2:
 The defense gradient, measured live across frontier and mid-tier models:

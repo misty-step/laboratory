@@ -63,7 +63,7 @@ The dataset answers: do boundary tagging, instruction-based defenses, and output
 
 ## License
 
-MIT License. See `LICENSE` in the repository root.
+CC BY 4.0 (dataset). The experimental code is MIT. See `LICENSE` in the repository root.
 
 ## Citation Format
 
