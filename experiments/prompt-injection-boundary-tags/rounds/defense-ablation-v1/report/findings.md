@@ -2,7 +2,7 @@
 
 Generated: 2026-03-02 18:46:16 UTC
 Input: `experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1/data/runs_latest.csv`
-Total rows: 2100 (adversarial: 2096, utility: 0, adaptive: 0)
+Total rows: 2100 collected; 2096 valid adversarial rows analyzed (4 excluded as API errors, score=-1)
 
 ## ASR by Condition
 

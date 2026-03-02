@@ -187,15 +187,15 @@ Total API spend: $5.28 across 2,107 completed trials (7 duplicate trials were ru
 
 Table 1 reports ASR across all models for each defense condition.
 
-**Table 1. ASR by defense condition (N = 420 per condition).**
+**Table 1. ASR by defense condition (planned 420 per condition; actual N excludes 4 API-error rows).**
 
 | Condition | N | ASR | 95% CI | Score-3 events |
 |---|---:|---:|---|---:|
 | raw | 420 | 17.4% | [14.1%, 21.3%] | 73 |
-| tags_only | 420 | 5.5% | [3.7%, 8.1%] | 23 |
+| tags_only | 419 | 5.5% | [3.7%, 8.1%] | 23 |
 | instruction_only | 420 | 2.4% | [1.3%, 4.3%] | 10 |
 | instruction_tags | 420 | 0.5% | [0.1%, 1.7%] | 2 |
-| full_stack | 420 | 0.0% | [0.0%, 0.9%] | 0 |
+| full_stack | 417 | 0.0% | [0.0%, 0.9%] | 0 |
 
 ASR is monotonically decreasing across conditions, ranging from 17.4% in the undefended baseline to 0.0% with the full defense stack. The overall chi-square test of independence between condition and ASR was highly significant: χ²(4) = 177.13, p < 0.001, Cramer's V = 0.290 (medium effect size).
 
