@@ -34,7 +34,7 @@ The overall effect is real (chi-square p < 0.001, Cramer's V = 0.29). Each condi
 
 **Tags and instruction are statistically equivalent to each other.** After Bonferroni correction for multiple comparisons, `tags_only` (5.5%) and `instruction_only` (2.4%) are not significantly different from one another. Both beat `raw` by a wide margin, but neither is clearly the better single layer. If you can only add one defense, the data doesn't tell you which one to pick.
 
-What the data does tell you: combine them. `instruction_tags` (0.5%) is significantly better than either layer alone (p = 0.0001 vs tags, p = 0.037 vs instruction, though the latter doesn't survive Bonferroni). The combination isn't just additive. It's multiplying. Boundary tags apparently make the instruction more effective, and vice versa.
+What the data does tell you: combine them. `instruction_tags` (0.5%) is significantly better than `tags_only` (p_adj = 0.0001). The improvement over `instruction_only` is in the same direction but doesn't survive Bonferroni correction for multiple comparisons (p_adj = 0.37). The two layers appear to be more effective together than either is alone, though our current sample size limits how precisely we can establish that synergy.
 
 **The output filter barely matters once you have both other layers.** Going from `instruction_tags` to `full_stack` reduces ASR from 0.5% to 0.0%, a 0.5 percentage point improvement that is not statistically significant. In this dataset that's 2 compromises out of 420 trials. The output filter is a last-resort backstop, not a standalone defense. At 0.5% residual ASR, it earns its keep as a safety net, but you'd be wrong to treat it as a substitute for the earlier layers.
 
@@ -52,7 +52,7 @@ The per-model numbers deserve their own attention:
 | GPT-5.2 | 0.3% | Proprietary |
 | Claude Sonnet 4.6 | 0.0% | Proprietary |
 
-The Western frontier models (Claude, GPT-5.2, Gemini) are dramatically more resistant than the open-weight alternatives, even before any defense is applied. DeepSeek at 17.7% is operating at the same ASR level as an undefended frontier model. MiniMax at 11.0% isn't far behind.
+The Western frontier models (Claude, GPT-5.2, Gemini) are dramatically more resistant than the open-weight alternatives. The table above shows pooled ASR across all defense conditions; in the undefended condition specifically, DeepSeek's ASR was 53.3% and MiniMax's was 33.3%. Even averaged across all conditions including full defense, DeepSeek at 17.7% and MiniMax at 11.0% are still well above any frontier model.
 
 This gap is probably training-related. Models like Claude appear to have internalized instruction-following policies that treat credential exfiltration as off-limits regardless of what the untrusted content says. Open-weight models trained primarily for capability may not have received the same adversarial alignment treatment.
 

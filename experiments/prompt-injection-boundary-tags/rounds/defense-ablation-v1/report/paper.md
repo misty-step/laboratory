@@ -305,7 +305,7 @@ This equivalence is not obvious a priori. Boundary tags work by structural disam
 
 ### 5.2 Combination Provides Meaningful Incremental Protection
 
-While neither first-layer defense dominates the other, their combination is significantly better than either alone. The instruction+tags combination achieves 0.5% ASR versus 5.5% (tags alone) and 2.4% (instruction alone). Both pairwise improvements — from `tags_only` to `instruction_tags`, and implicitly from `instruction_only` to `instruction_tags` — are statistically significant.
+While neither first-layer defense dominates the other, their combination is significantly better than either alone. The instruction+tags combination achieves 0.5% ASR versus 5.5% (tags alone) and 2.4% (instruction alone). The improvement from `tags_only` to `instruction_tags` is statistically significant (p_adj = 0.0001, OR = 12.1). The improvement from `instruction_only` to `instruction_tags` is in the same direction but does not survive Bonferroni correction (p_adj = 0.37).
 
 This suggests a complementarity between the two mechanisms. Tags may fail when the model is inattentive to structural cues (e.g., in long contexts); instructions may fail when payloads are particularly fluent. Having both layers means both failure modes must be exploited simultaneously.
 
@@ -465,4 +465,4 @@ Total API spend: $5.28 (2,107 completed trials). Per-model breakdown:
 | minimax-m2.5 | $0.063 |
 | deepseek-v3.2 | $0.057 |
 
-The study ran well within its $100 budget ceiling. The cost differential between models (Claude 51× more expensive than DeepSeek per trial on average) reflects both token pricing and model verbosity (Claude responses averaged ~450 tokens; DeepSeek responses averaged ~180 tokens).
+The study ran well within its $50 budget ceiling. The cost differential between models (Claude 51× more expensive than DeepSeek per trial on average) reflects both token pricing and model verbosity (Claude responses averaged ~450 tokens; DeepSeek responses averaged ~180 tokens).

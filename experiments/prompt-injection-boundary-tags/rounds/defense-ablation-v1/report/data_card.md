@@ -14,7 +14,7 @@ The dataset answers: do boundary tagging, instruction-based defenses, and output
 
 - **Mode**: Live API calls only. No simulation data is included. The `mode` column is always `"live"`.
 - **Temperature**: 0 for all calls (near-deterministic; minor non-determinism from provider sampling is possible).
-- **Date range**: [insert collection start date] – [insert collection end date]
+- **Date range**: 2026-03-01 – 2026-03-02 (UTC)
 - **Models**: claude-sonnet-4.6 (Anthropic), gpt-5.2 (OpenAI), gemini-3-flash (Google), grok-4.1-fast (xAI), kimi-k2.5 (Moonshot AI), minimax-m2.5 (MiniMax), deepseek-v3.2 (DeepSeek)
 - **Defense conditions**: raw, tags_only, instruction_only, instruction_tags, full_stack
 - **Payload categories**: 12 categories covering direct override, gradual escalation, role hijack, tool misuse, and related attack patterns

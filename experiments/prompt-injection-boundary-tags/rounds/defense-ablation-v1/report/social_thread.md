@@ -18,7 +18,7 @@ Post 3:
 The surprising part: tags alone and an instruction alone perform about the same. Neither is clearly better. But together they're multiplicatively stronger — not just additive. The output filter added nothing significant on top of that combination.
 
 Post 4:
-Practical takeaway: wrap untrusted content in labeled boundaries, add one sentence to your system prompt. That's it. But model choice matters too — Claude and GPT-5 were near-immune undefended; DeepSeek failed 18% of undefended trials. Know what you're running. #aisecurity
+Practical takeaway: wrap untrusted content in labeled boundaries, add one sentence to your system prompt. That's it. But model choice matters too — Claude and GPT-5 were near-immune undefended; DeepSeek failed 53% of undefended trials. Know what you're running. #aisecurity
 
 Post 5:
 Full data, methodology, and findings: https://github.com/misty-step/laboratory/tree/master/experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1

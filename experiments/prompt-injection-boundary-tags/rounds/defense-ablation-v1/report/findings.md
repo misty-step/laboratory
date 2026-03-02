@@ -1,7 +1,7 @@
 # Defense Ablation v1 — Findings
 
 Generated: 2026-03-02 18:46:16 UTC
-Input: `/Users/phaedrus/Development/laboratory/experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1/data/runs_latest.csv`
+Input: `experiments/prompt-injection-boundary-tags/rounds/defense-ablation-v1/data/runs_latest.csv`
 Total rows: 2100 (adversarial: 2096, utility: 0, adaptive: 0)
 
 ## ASR by Condition
