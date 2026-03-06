@@ -26,3 +26,17 @@ jobs:
 
       - name: Run smoke checks
         run: make ci-smoke
+
+  merge-gate:
+    name: merge-gate
+    needs: [ci-smoke]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - run: |
+          if [[ "${{ needs.ci-smoke.result }}" == "success" ]]; then
+            echo "merge-gate green"
+          else
+            echo "merge-gate red (ci-smoke=${{ needs.ci-smoke.result }})"
+            exit 1
+          fi
