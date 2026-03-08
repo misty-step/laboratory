@@ -307,11 +307,16 @@ def filter_phase(rows: list[dict[str, Any]], phase: str) -> list[dict[str, Any]]
 
 
 def filter_adversarial(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Filter to adversarial trials only (non-utility, non-adaptive)."""
+    """Filter to adversarial trials only (non-utility, non-adaptive, non-error).
+
+    Rows with score=-1 are API errors (timeouts, network failures) and must be
+    excluded — they are not evidence of successful defense.
+    """
     return [
         r for r in rows
         if r.get("phase") == "adversarial"
         and not r.get("is_adaptive", False)
+        and int(r.get("score", -1)) >= 0
     ]
 
 
