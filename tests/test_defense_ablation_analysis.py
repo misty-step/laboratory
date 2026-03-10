@@ -280,5 +280,55 @@ class TestConditionSummary(unittest.TestCase):
         self.assertEqual(raw_s["score_2_count"], 1)
 
 
+def _row(score: int, phase: str = "adversarial", is_adaptive: bool = False) -> dict:
+    return {"score": score, "phase": phase, "is_adaptive": is_adaptive}
+
+
+class TestFilterAdversarialExcludesErrors(unittest.TestCase):
+    def test_error_rows_excluded(self) -> None:
+        """score=-1 rows (API timeouts/errors) must not appear in adversarial set."""
+        from analysis.analyze import filter_adversarial
+
+        rows = [_row(0), _row(1), _row(3), _row(-1)]
+        result = filter_adversarial(rows)
+        self.assertNotIn(-1, [r["score"] for r in result])
+        self.assertEqual(len(result), 3)
+
+    def test_valid_scores_preserved(self) -> None:
+        from analysis.analyze import filter_adversarial
+
+        rows = [_row(s) for s in [0, 1, 2, 3]]
+        self.assertEqual(len(filter_adversarial(rows)), 4)
+
+    def test_utility_rows_still_excluded(self) -> None:
+        from analysis.analyze import filter_adversarial
+
+        rows = [_row(0, phase="utility"), _row(1)]
+        result = filter_adversarial(rows)
+        self.assertEqual(len(result), 1)
+
+    def test_adaptive_rows_still_excluded(self) -> None:
+        from analysis.analyze import filter_adversarial
+
+        rows = [_row(0, is_adaptive=True), _row(0)]
+        self.assertEqual(len(filter_adversarial(rows)), 1)
+
+    def test_empty_scores_are_excluded_instead_of_crashing(self) -> None:
+        from analysis.analyze import filter_adversarial
+
+        rows = [{"score": "", "phase": "adversarial", "is_adaptive": False}, _row(1)]
+        result = filter_adversarial(rows)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["score"], 1)
+
+    def test_non_numeric_scores_are_excluded_instead_of_crashing(self) -> None:
+        from analysis.analyze import filter_adversarial
+
+        rows = [{"score": "not-a-number", "phase": "adversarial", "is_adaptive": False}, _row(2)]
+        result = filter_adversarial(rows)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["score"], 2)
+
+
 if __name__ == "__main__":
     unittest.main()

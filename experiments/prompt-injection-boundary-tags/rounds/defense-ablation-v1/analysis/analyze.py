@@ -306,12 +306,36 @@ def filter_phase(rows: list[dict[str, Any]], phase: str) -> list[dict[str, Any]]
     return [r for r in rows if r.get("phase") == phase]
 
 
+def parse_optional_int(value: Any) -> int | None:
+    """Parse an optional int from CSV-ish input, returning None for malformed values."""
+    if value is None:
+        return None
+
+    if isinstance(value, int):
+        return value
+
+    text = str(value).strip()
+    if not text:
+        return None
+
+    try:
+        return int(text)
+    except (TypeError, ValueError):
+        return None
+
+
 def filter_adversarial(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Filter to adversarial trials only (non-utility, non-adaptive)."""
+    """Filter to adversarial trials only (non-utility, non-adaptive, non-error).
+
+    Rows with score=-1 are API errors (timeouts, network failures) and must be
+    excluded — they are not evidence of successful defense.
+    """
     return [
         r for r in rows
         if r.get("phase") == "adversarial"
         and not r.get("is_adaptive", False)
+        and (score := parse_optional_int(r.get("score"))) is not None
+        and score >= 0
     ]
 
 
