@@ -313,6 +313,22 @@ class TestFilterAdversarialExcludesErrors(unittest.TestCase):
         rows = [_row(0, is_adaptive=True), _row(0)]
         self.assertEqual(len(filter_adversarial(rows)), 1)
 
+    def test_empty_scores_are_excluded_instead_of_crashing(self) -> None:
+        from analysis.analyze import filter_adversarial
+
+        rows = [{"score": "", "phase": "adversarial", "is_adaptive": False}, _row(1)]
+        result = filter_adversarial(rows)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["score"], 1)
+
+    def test_non_numeric_scores_are_excluded_instead_of_crashing(self) -> None:
+        from analysis.analyze import filter_adversarial
+
+        rows = [{"score": "not-a-number", "phase": "adversarial", "is_adaptive": False}, _row(2)]
+        result = filter_adversarial(rows)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["score"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

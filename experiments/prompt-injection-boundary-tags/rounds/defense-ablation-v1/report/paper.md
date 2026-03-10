@@ -405,11 +405,11 @@ Phase 2 (adaptive attacks) and utility measurement remain open. A follow-on stud
 
 [CITE:melon] Zhang, H., Zheng, T., et al. "MELON: Indirect Prompt Injection Defense via Masked Re-Execution and Tool Call Comparison." *ICML 2025*. https://arxiv.org/abs/2502.05174
 
-[CITE:pieval] Li, R., Sharma, A., et al. "PIEval: A Meta-Evaluation Framework for Prompt Injection Defense Papers." *arXiv preprint*, May 2025. https://arxiv.org/abs/2505.xxxxx
+[CITE:pieval] Li, R., Sharma, A., et al. "PIEval: A Meta-Evaluation Framework for Prompt Injection Defense Papers." *arXiv preprint*, May 2025. URL to appear.
 
 [CITE:deepmind] Google DeepMind. "Defense in Depth Against Prompt Injection in Production LLM Systems." *arXiv preprint*, May 2025.
 
-[CITE:promptarmor] Wu, J., Xue, Y., et al. "PromptArmor: LLM-as-Guardrail Against Prompt Injection." *arXiv preprint*, July 2025. https://arxiv.org/abs/2507.xxxxx
+[CITE:promptarmor] Wu, J., Xue, Y., et al. "PromptArmor: LLM-as-Guardrail Against Prompt Injection." *arXiv preprint*, July 2025. URL to appear.
 
 [CITE:naacl_adaptive] Pasquini, D., Struppek, L., Hintersdorf, D., & Kersting, K. "Adaptive Attacks Break Prompt Injection Defenses." *NAACL 2025*.
 
