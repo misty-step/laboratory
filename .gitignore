@@ -7,3 +7,8 @@ node_modules/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
+
+# Spellbook runtime state
+.spellbook/deliver/
+.spellbook/tailor/audit/
+.spellbook/traces/
