@@ -29,6 +29,7 @@ laboratory/
 │   └── glance-context-ablations/ # Glance context-packaging ablation harness
 ├── templates/            # new experiment skeletons
 ├── tools/                # shared utilities
+├── .agents/              # Spellbook-backed repo-local skills and agents
 └── papers/               # finalized publications
 ```
 
@@ -40,6 +41,13 @@ Each round has its own `design.md`, `harness/`, `analysis/` (when present), `dat
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -e .
+```
+
+This repo is Spellbook-backed. The repo-local harness lives in `.agents/`;
+Claude, Codex, and Pi entrypoints are bridges back to that shared root.
+
+```bash
+make ci-smoke
 ```
 
 For live runs, set API keys via env vars (see `.env.example`).
@@ -68,7 +76,25 @@ python3 analyze_r2.py
 - `docs/ARCHITECTURE.md`
 - `docs/RUN_SCHEMA.md`
 - `docs/ISSUE_LABELS.md`
+- `docs/experiment-ideas.md`
+- `docs/inspiration-studies.md`
 - `docs/adr/0000-template.md`
+
+## Agent Harness
+
+Spellbook is the active harness substrate. Keep shared skill content under
+`.agents/skills/`; keep `.claude/skills/`, `.codex/skills/`, and `.pi/skills/`
+as symlink bridges. Repo-specific lab skills such as `brainstorm` and
+`peer-review` live alongside the selected Spellbook workflow skills.
+
+The load-bearing repo gate is:
+
+```bash
+make ci-smoke
+```
+
+Use Spellbook workflow skills for repo work: `/groom`, `/shape`, `/deliver`,
+`/code-review`, `/ci`, `/qa`, `/settle`, and `/ship`.
 
 ## CI Smoke Checks
 

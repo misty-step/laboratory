@@ -1,0 +1,107 @@
+id: mcp-tool-schema-entropy
+title: MCP Tool Schema Entropy
+status: design
+owner: laboratory
+created: 2026-05-24
+mode_policy:
+    simulate_default: true
+    live_requires_flag: true
+    simulated_data_publishable: false
+research_question: How does MCP-style tool catalog entropy affect agent tool choice, argument validity, and final-state success?
+novelty: Measures the causal effect of tool catalog and schema entropy rather than ranking full agents on fixed tool-use benchmarks.
+hypotheses:
+    - id: H1
+      statement: Success declines as catalog entropy increases, controlling for model, task, domain, and catalog size.
+    - id: H2
+      statement: Semantic ambiguity among plausible tools harms success more than raw catalog size alone.
+    - id: H3
+      statement: Name and description ambiguity primarily increases wrong-tool and extra-tool errors, while argument complexity primarily increases schema-invalid and semantic-argument errors.
+    - id: H4
+      statement: Strict schema validation reduces syntactic JSON failures but does not eliminate semantic wrong-tool or wrong-argument failures.
+factors:
+    catalog_size:
+        levels: [8, 32]
+    schema_entropy:
+        levels: [low, medium, high]
+        components:
+            - tool_count
+            - target_distractor_similarity
+            - name_collision_score
+            - description_noise_score
+            - argument_complexity_score
+            - decoy_ratio
+    task_type:
+        levels: [single_call, two_call]
+    domain:
+        levels: [issue_tracker, order_desk, calendar, package_registry]
+    repeat:
+        levels: [1, 2, 3]
+models:
+    selection_policy: Choose three cheap current tool-calling models, one each from OpenAI, Anthropic, and Google when keys are available.
+    planned_slots:
+        - provider: openai
+          price_class: cheap
+        - provider: anthropic
+          price_class: cheap
+        - provider: google
+          price_class: cheap
+sample_plan:
+    live_smoke_calls: 6
+    mvp_calls: 432
+budget:
+    live_smoke_cap_usd: 2
+    mvp_cap_usd: 25
+    v2_requires_approval_above_usd: 100
+primary_metric: success_score_ge_2
+score_scale:
+    3: exact gold sequence, valid arguments, correct final state, no unnecessary risky calls
+    2: correct final state with harmless extra read-only call or normalizable argument issue
+    1: valid call with wrong tool, missing step, wrong order, or material semantic argument issue
+    0: invalid JSON, schema-invalid arguments, hallucinated tool, refusal, or wrong mutating action
+error_taxonomy:
+    - wrong_tool
+    - missing_tool
+    - extra_tool
+    - invalid_json
+    - schema_invalid
+    - semantic_arg_error
+    - wrong_order
+    - refusal
+    - hallucinated_tool
+    - unsafe_mutation
+trace_required:
+    - run_id
+    - trial_id
+    - seed
+    - mode
+    - provider
+    - model
+    - task
+    - gold_sequence
+    - expected_final_state
+    - internal_catalog
+    - provider_schema
+    - entropy_components
+    - raw_request
+    - raw_response
+    - parsed_tool_calls
+    - local_tool_results
+    - validation_errors
+    - final_state_diff
+    - usage_tokens
+    - latency_ms
+    - estimated_cost_usd
+deliverables_required:
+    - report/findings.md
+    - report/paper.md
+    - report/blog_post.md
+    - report/executive_summary.md
+    - report/social_thread.md
+    - report/data_card.md
+    - report/charts
+run_blockers:
+    - Implement experiment manifest validation.
+    - Implement MCP entropy harness.
+    - Implement provider schema compilers.
+    - Implement per-trial trace writer.
+    - Implement live-data publication guard.
