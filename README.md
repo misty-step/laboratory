@@ -113,7 +113,10 @@ Run the same gate locally:
 make ci-smoke
 ```
 
-To block merges on failures, set branch protection to require the `ci-smoke` workflow check.
+To block merges on failures, set branch protection to require these hosted checks:
+
+- `ci-smoke`: runs the same `make ci-smoke` gate documented above.
+- `trufflehog`: repository secret scan.
 
 ## Experiments
 
