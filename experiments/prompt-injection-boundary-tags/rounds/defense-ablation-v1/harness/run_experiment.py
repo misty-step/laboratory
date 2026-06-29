@@ -69,7 +69,7 @@ CONDITIONS = [
 MODELS: Dict[str, Dict[str, object]] = {
     "claude-sonnet-4.6": {
         "provider": "anthropic",
-        "model_ids": ["claude-sonnet-4-6-20250514"],
+        "model_ids": ["claude-sonnet-4-6"],
         "api_key_env": "ANTHROPIC_API_KEY",
         "cost_input_per_mtok": 3.0,
         "cost_output_per_mtok": 15.0,
@@ -83,14 +83,14 @@ MODELS: Dict[str, Dict[str, object]] = {
     },
     "gemini-3-flash": {
         "provider": "google",
-        "model_ids": ["gemini-3-flash"],
+        "model_ids": ["gemini-3-flash-preview"],
         "api_key_env": "GOOGLE_API_KEY",
         "cost_input_per_mtok": 0.10,
         "cost_output_per_mtok": 0.40,
     },
     "grok-4.1-fast": {
         "provider": "xai",
-        "model_ids": ["grok-4.1-fast"],
+        "model_ids": ["grok-4-1-fast"],
         "api_key_env": "XAI_API_KEY",
         "cost_input_per_mtok": 0.20,
         "cost_output_per_mtok": 0.50,
