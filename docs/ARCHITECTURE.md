@@ -34,6 +34,26 @@ Misty Step's lab for reproducible software-engineering experiments.
 ## ADRs
 - Architecture decisions live in `docs/adr/` (template: `docs/adr/0000-template.md`).
 
+## Research Backlog
+- `docs/experiment-ideas.md` is the living pile of candidate experiments.
+- `docs/inspiration-studies.md` tracks external studies and classic experiments
+  that can seed future lab work.
+- Completed experiments should add follow-up ideas or explicitly record why no
+  follow-up was generated.
+
+## Spellbook Harness
+- `.agents/skills/` is the canonical repo-local skill root.
+- `.claude/skills/`, `.codex/skills/`, and `.pi/skills/` are symlink bridges
+  back to `.agents/skills/`.
+- `.agents/agents/` contains the shared agent definitions; harness-specific
+  agent directories bridge to it where the runtime supports markdown agents.
+- `.spellbook/repo-brief.md` records the durable tailoring brief for future
+  skill rewrites and harness audits.
+- `make ci-smoke` is the load-bearing repository gate.
+
+Spellbook supplies the workflow primitives. The laboratory supplies the science
+contract: hypothesis, methodology, data, analysis, and deliverables.
+
 ## Glance Context Ablations
 - Canonical task suite lives in `tasks/task_suite_v1.json`.
 - Harness in `harness/run_experiment.py` supports `C0`-`C4` condition toggles.

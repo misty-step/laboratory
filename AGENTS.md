@@ -104,6 +104,13 @@ Every PR must include:
 
 Every experiment follows: **Hypothesis → Methodology → Data → Analysis → Deliverables**.
 
+Use Spellbook for agent workflow:
+- The canonical repo-local skill root is `.agents/skills/`.
+- `.claude/skills/`, `.codex/skills/`, and `.pi/skills/` are bridge layers back to `.agents/skills/`.
+- Use `/groom`, `/shape`, `/deliver`, `/code-review`, `/ci`, `/qa`, `/settle`, and `/ship` for backlog-driven work.
+- The load-bearing verification gate is `make ci-smoke`.
+- Record durable work in `backlog.d/`; archive completed work in `backlog.d/_done/` only after evidence is inspectable in repo files, command output, or committed artifacts.
+
 **Before starting any experiment:**
 1. Literature review (web search — don't trust training data for current benchmarks)
 2. Gap analysis — what does this measure that existing work doesn't?
