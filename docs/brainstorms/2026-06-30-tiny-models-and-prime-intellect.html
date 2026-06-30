@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en" data-ae-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Misty Step Lab Should Play — Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Geist+Mono:wght@100..900&amp;display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/misty-step/aesthetic@v2.5.1/aesthetic.css">
+<style>
+  :root{
+    --ae-accent:#b23a25; --ae-accent-dark:#e0876f;
+    --t-dive:#b23a25;   --t-dive-wash:#f7ece8;
+    --t-fave:#b8860b;   --t-fave-wash:#f8f1dd;
+    --t-teeny:#2f7d6b;  --t-teeny-wash:#e6f1ed;
+    --t-pi:#3f4ea0;     --t-pi-wash:#e9ebf6;
+    --bone:#f6f3ec;
+  }
+  body{ background:var(--bone);
+    background-image:radial-gradient(var(--ae-line) 1px, transparent 1px);
+    background-size:22px 22px; }
+  .wp .ae-bar,.wp .ae-stage{ width:min(86rem, 100% - 3rem); }
+
+  /* hero / work contract */
+  .hero{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(24em,.78fr); gap:2.6em; align-items:start; }
+  .hero h1{ font-size:clamp(1.9rem,3.4vw,3.1rem); line-height:1.04; letter-spacing:-.02em; }
+  .spine{ margin-top:1.4em; display:flex; flex-wrap:wrap; gap:.5em; align-items:center; font-family:"Geist Mono",monospace; font-size:.82rem; }
+  .spine b{ background:var(--t-dive); color:#fff; padding:.28em .6em; border-radius:.4em; font-weight:600; }
+  .spine .arr{ color:var(--ae-dim,#9a948a); }
+  .spine .thru{ width:100%; color:var(--ae-dim,#857f74); font-size:.78rem; margin-top:.2em; }
+
+  /* filter bar */
+  .filterbar{ position:sticky; top:0; z-index:20; margin-top:2.2em;
+    display:flex; flex-wrap:wrap; gap:.5em; align-items:center;
+    padding:.7em 0; background:linear-gradient(var(--bone) 72%, transparent); }
+  .chip{ font:inherit; font-size:.84rem; cursor:pointer; border:1px solid var(--ae-line);
+    background:var(--ae-surface,#fff); color:inherit; padding:.4em .85em; border-radius:2em;
+    display:inline-flex; gap:.45em; align-items:center; transition:all .14s; }
+  .chip:hover{ border-color:#bbb3a6; }
+  .chip[aria-pressed="true"]{ background:var(--c,#222); color:#fff; border-color:transparent; }
+  .chip .dot{ width:.62em; height:.62em; border-radius:50%; background:var(--c,#888); }
+  .chip[aria-pressed="true"] .dot{ background:#fff; }
+  .count{ margin-left:auto; font-family:"Geist Mono",monospace; font-size:.78rem; color:var(--ae-dim,#857f74); }
+
+  /* cards */
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,27rem),1fr)); gap:1px; background:var(--ae-line); margin-top:1px; }
+  .card{ background:var(--ae-surface,#fff); border-left:3px solid var(--c,#888); padding:1.15em 1.3em 1.25em; min-width:0;
+    display:flex; flex-direction:column; }
+  .card.hide{ display:none; }
+  .card .top{ display:flex; gap:.7em; align-items:baseline; cursor:pointer; }
+  .card .top:hover .h{ color:var(--c); }
+  .h{ font-weight:650; font-size:1.06rem; line-height:1.2; letter-spacing:-.01em; transition:color .14s; flex:1; min-width:0; }
+  .tagrow{ display:flex; flex-wrap:wrap; gap:.4em; margin:.55em 0 .2em; }
+  .tag{ font-family:"Geist Mono",monospace; font-size:.66rem; text-transform:uppercase; letter-spacing:.04em;
+    padding:.2em .5em; border-radius:.35em; background:var(--c-wash,#eee); color:var(--c,#444); }
+  .tag.verdict{ background:var(--c); color:#fff; }
+  .tag.grounded{ background:#1f7a3f; color:#fff; }
+  .hook{ font-size:.95rem; color:#4a463e; margin:.5em 0 0; }
+  .chev{ flex:none; width:1.4em; height:1.4em; border-radius:50%; border:1px solid var(--ae-line);
+    display:grid; place-items:center; font-size:.8rem; color:var(--c); transition:transform .26s; }
+  .card.open .chev{ transform:rotate(45deg); }
+
+  /* progressive disclosure body */
+  .detail{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s ease; }
+  .detail > div{ overflow:hidden; }
+  .card.open .detail{ grid-template-rows:1fr; }
+  .sec{ margin-top:1em; }
+  .sec h4{ font-family:"Geist Mono",monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--c); margin:0 0 .3em; }
+  .sec p{ margin:0; font-size:.92rem; line-height:1.5; color:#3a362f; }
+  .sec ol{ margin:.2em 0 0; padding-left:1.2em; font-size:.92rem; line-height:1.5; color:#3a362f; }
+  .sec ol li{ margin:.28em 0; }
+  .sec ul.flat{ list-style:none; margin:.2em 0 0; padding:0; font-size:.9rem; }
+  .sec ul.flat li{ padding:.1em 0 .1em 1.1em; position:relative; }
+  .sec ul.flat li::before{ content:"→"; position:absolute; left:0; color:var(--c); }
+  .metaft{ margin-top:1.05em; padding-top:.7em; border-top:1px dotted var(--ae-line);
+    display:flex; flex-wrap:wrap; gap:.4em 1.1em; font-family:"Geist Mono",monospace; font-size:.72rem; color:var(--ae-dim,#857f74); }
+  .metaft b{ color:#3a362f; font-weight:600; }
+
+  .sectionhead{ margin:2.6em 0 .2em; display:flex; align-items:baseline; gap:.8em; }
+  .sectionhead h2{ font-size:1.15rem; letter-spacing:-.01em; }
+  .sectionhead .rule{ flex:1; border-top:1px solid var(--ae-line); }
+  .sectionhead .k{ font-family:"Geist Mono",monospace; font-size:.72rem; color:var(--ae-dim,#857f74); }
+
+  .ctapanel{ margin-top:2.6em; }
+  .cta-opts{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--ae-line); margin-top:1em; }
+  .cta-opts .o{ background:var(--ae-surface,#fff); padding:1em 1.1em; }
+  .cta-opts .o .k{ font-family:"Geist Mono",monospace; font-size:.74rem; color:var(--t-dive); font-weight:600; }
+
+  @media (max-width:820px){
+    .hero{ grid-template-columns:1fr; gap:1.4em; }
+    .cta-opts{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="ae-screen wp">
+
+  <header class="ae-bar">
+    <a class="ae-name" href="#">MISTY STEP LAB / WHERE WE PLAY</a>
+    <p class="ae-chrome">tiny-model plane · prime-intellect agentic plane</p>
+  </header>
+
+  <main class="ae-stage ae-stage-scroll">
+    <article class="ae-view">
+
+      <!-- WORK CONTRACT -->
+      <section class="hero" aria-label="Thesis">
+        <div>
+          <p class="ae-chrome">FINDINGS · 2026-06-29</p>
+          <h1 class="ae-strong">Two planes worth a lab's attention, and the one spine that ties them together.</h1>
+          <p class="ae-lede">The tiny-single-purpose-local-model thesis (Rampart) and Prime Intellect's "every company becomes a research lab" thesis aren't separate bets. The lab's existing 0–3 injection scorer is already the shared reward across a red-team, a certification, and a flagship RL environment.</p>
+          <div class="spine" aria-label="Strategic spine">
+            <b>Rampart red-team</b><span class="arr">→</span>
+            <b>Misty Step Verified</b><span class="arr">→</span>
+            <b>InjectHunter on PI Hub</b>
+            <span class="thru">through-line: <code>shared/scoring/scorer.py</code> — already <code>verifiers</code>-shaped</span>
+          </div>
+        </div>
+        <aside class="ae-panel">
+          <h2 class="ae-h">HOW TO READ THIS</h2>
+          <p><strong>Three deep-dives</strong> you asked me to lean into, each with an honest tractability verdict — not a pitch deck.</p>
+          <p><strong>Three faves</strong>, pitched harder.</p>
+          <p><strong>Two ideation planes</strong> — teeny territories and the Prime Intellect agentic plane (environments + products).</p>
+          <p class="ae-dim">Tap any card to open it. Filter by track above. 🟢 marks the grounded, buildable-now ideas.</p>
+        </aside>
+      </section>
+
+      <!-- FILTER -->
+      <div class="filterbar" id="filterbar" role="group" aria-label="Filter by track"></div>
+
+      <div id="root"></div>
+
+      <!-- CTA -->
+      <section class="ae-panel ctapanel" aria-label="Next step">
+        <h2 class="ae-h">WHERE TO POINT NEXT</h2>
+        <div class="cta-opts">
+          <div class="o"><span class="k">A · explore</span><p>Keep this artifact as the live exploration surface — fold new dives + ideas in as they land.</p></div>
+          <div class="o"><span class="k">B · build ▲ rec</span><p>Scaffold the <b>Rampart red-team</b> as a real <code>design.md</code> + the 4-step first experiment. Novel, this-week-runnable, head of a 3-stage program.</p></div>
+          <div class="o"><span class="k">C · ideate</span><p>Push harder — the apnea wearable, or open a fourth territory untouched here.</p></div>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="ae-foot">
+    <span>Misty Step computational laboratory — exploratory ideation, not measurement.</span>
+    <span>Current as of 2026-06-29.</span>
+  </footer>
+</div>
+
+<script>
+const TRACKS = [
+  {id:"all",   label:"All",              c:"#222"},
+  {id:"dive",  label:"Deep dives",       c:"var(--t-dive)"},
+  {id:"fave",  label:"My faves",         c:"var(--t-fave)"},
+  {id:"teeny", label:"Teeny plane",      c:"var(--t-teeny)"},
+  {id:"pienv", label:"PI · environments",c:"var(--t-pi)"},
+  {id:"piprod",label:"PI · products",    c:"var(--t-pi)"},
+];
+const CWASH = {dive:"var(--t-dive-wash)",fave:"var(--t-fave-wash)",teeny:"var(--t-teeny-wash)",pienv:"var(--t-pi-wash)",piprod:"var(--t-pi-wash)"};
+const CCOL  = {dive:"var(--t-dive)",fave:"var(--t-fave)",teeny:"var(--t-teeny)",pienv:"var(--t-pi)",piprod:"var(--t-pi)"};
+
+const IDEAS = [
+  // ---- DEEP DIVES ----
+  { track:"dive", title:"❄️ Beat-the-freeze (Parkinson's FOG)", verdict:"Tractable — but not where I first aimed",
+    hook:"Detecting a freeze in progress is solved. The unsolved frontier is free-living pre-onset prediction at a tolerable false-positive rate.",
+    secs:[
+      {h:"Honest correction", p:"I oversold the &lt;100ms angle. Freezes last seconds — a 0.5–1s cue is clinically fine. On-device matters for battery and offline use, not milliseconds."},
+      {h:"Already solved", p:"In-progress freeze detection from a single shin/waist IMU: sub-1MB CNNs hit ~F1 0.90 subject-independent."},
+      {h:"The real unsolved problem", p:"Pre-onset prediction in <em>free-living</em> conditions at low false-positive rate. Best pre-FOG numbers (~84% sens / 86% spec) are in-lab LOSO; in the wild they collapse — for reasons that are fundamental, not tuning."},
+      {h:"Why it's hard (not tunable)", list:["Akinetic freezes have no prodrome — a major subtype is physically unpredictable","Akinetic stillness ≈ sitting/standing → free-living false-positive floods","Enormous inter/intra-patient variability × ON/OFF medication state","Lab→home distribution gap is brutal"]},
+      {h:"Why no breakout despite Path Finder, DeFOG, CUE1, Cue2Walk", p:"Open-loop continuous cueing often matches closed-loop smart detection (gutting the value prop); RCTs underwhelm (DeFOG: no significant between-group difference); habituation; SaMD regulatory load; no reimbursement; compliance (people won't wear/charge it). Pooled cueing effect is real but I²≈94% — the variance is the story."},
+      {h:"Where a small sharp team wins", list:["Personalization over universality: 60-second per-patient on-device calibration that learns this person's signature + med-state. The variability that sinks population models becomes the moat","Own the false-positive frontier honestly: specificity-first; publish free-living FP/hour — the metric everyone hides","The scarce asset is the dataset, not the model: a curated longitudinal free-living FOG corpus + drift-resistant eval"]},
+      {h:"Verdict", p:"Don't build the FOG detector (done). Build the personalization + free-living-robustness + honest-FP layer. Real paper, possibly a real device."},
+    ],
+    meta:{Effort:"month+", Edge:"per-patient personalization", Risk:"akinetic subtype unpredictable"} },
+
+  { track:"dive", title:"😴 Sleep apnea — partner problem deleted by physics", verdict:"Strong — your instinct was right",
+    hook:"You don't separate the partner out. Pick a body-coupled sensor and the partner never enters the signal.",
+    secs:[
+      {h:"The reframe", p:"A microphone hears both people — an airborne-acoustics problem, hard to separate. But any body-coupled sensor (PPG, in-ear/chest accelerometer, ballistocardiogram) physically cannot see a sleeping partner. The comfortable wearable you imagined isn't a nice-to-have — it's what makes the problem tractable."},
+      {h:"It works today", p:"Belun Ring (finger PPG) REI-vs-PSG r≈0.91, AHI≥15 sens 86%/spec 87%; Withings under-mattress BCG AUC≈0.93; PranaQ in-ear PPG+accel FDA-cleared 2025. The cautionary tale: Apple Watch (wrist accel) ~66% sensitivity — misses a third."},
+      {h:"The real moats (not separation)", list:["Hypopnea sensitivity from one comfortable site — fuse desaturation + pulse-rate cyclic variation + respiratory effort","Nightly compliance — a ring or earbud is the comfort frontier; patches/cannulas don't get worn","The notification-vs-diagnosis wall — single-night AHI misclassifies 20–50% of mild/moderate; error stabilizes only after ~14 nights (Lechat 2022)"]},
+      {h:"The build", p:"In-ear or ring fusing PPG + accelerometer/BCG; tiny on-device model emitting per-night REI plus a multi-night trend, with a built-in clinician/HSAT handoff. Partner-proof by construction. Differentiation = multi-night-by-default + hypopnea recovery + converting a 'notification' into a reimbursable pathway — the exact lane Apple/Samsung are legally walled off from."},
+      {h:"Honest risk", p:"Hardest piece is hypopnea sensitivity + motion-artifact robustness across unsupervised nights. The funnel leaks at every clinical handoff."},
+    ],
+    meta:{Effort:"month+ (hw)", Edge:"contact sensing + multi-night", Risk:"hypopnea sensitivity"} },
+
+  { track:"dive", title:"🛡️ Red-teaming Rampart", verdict:"Breakable — strongest near-term research bet", grounded:true,
+    hook:"Almost certainly breakable to well below 98.4%, cheaply, imperceptibly, reproducibly — and novel because the target is.",
+    secs:[
+      {h:"Why novel", p:"The primitives aren't new; the target is. First independent adversarial stress-test of a publicly-shipped, open-weight, on-device .gov PII filter against its own published number. Open weights → every result is exactly reproducible."},
+      {h:"Per layer", list:["Regex (SSNs/IDs) falls to Unicode/full-width digits (１２３, ١٢٣), spelled-out numbers, locale ID formats it never compiled","MiniLM encoder (names/addresses) inherits small-NER pathologies: name-recall disparity on non-Western names (Mishra 2020), boundary fragility (RockNER), tokenizer destruction from imperceptible chars (Boucher, Bad Characters, S&P 2022)"]},
+      {h:"The expected kill shot", p:"Homoglyph + Unicode-digit substitution drives name/ID recall from ~98% to single digits with zero visible change to rendered text and no latency cost. One imperceptible perturbation, on a live government privacy tool."},
+      {h:"Paper AND product", p:"Package as 'Misty Step Verified' — a moving adversarial perturbation suite (rotated quarterly so vendors can't overfit), a public leaderboard of post-evasion recall, and a cert attesting 'retains ≥Y% recall under the current suite.' The lab's external-tamper-evident-measurement doctrine, sold."},
+      {h:"First experiment (this week)", list:["Pull Rampart weights + WebGPU runtime; reproduce 98.4% on a clean seed corpus (their way)","Build perturbation generators for two classes only: homoglyph/confusables (encoder) + Unicode/spelled digits & near-miss formats (regex)","Paired clean-vs-perturbed, ΔRecall per class with Wilson CIs + per-layer attribution","If the kill shot lands, freeze harness as v0 'Verified' and draft coordinated disclosure to NDS with a fix menu (NFKC + confusable folding + digit canonicalization; encoder adversarial augmentation)"]},
+      {h:"Framing", p:"Hardening a privacy-protective public good, not embarrassing it."},
+    ],
+    meta:{Effort:"week", Edge:"first independent .gov stress-test", Risk:"disclosure etiquette"} },
+
+  // ---- FAVES ----
+  { track:"fave", title:"📉 The Relationship Seismograph", badge:"build first",
+    hook:"Zero ML needed for the first jaw-drop: point at the week a dead relationship started dying, months before either person knew.",
+    secs:[
+      {h:"The pitch", p:"Not an app — a demonstration of the entire thesis in one artifact: the most private data imaginable (your whole text history), processed where it can never leak, rendering an invisible truth (the rhythm of a bond) no cloud product would dare compute."},
+      {h:"Mechanism", p:"Export an iMessage thread; compute inter-message latency + length + who-initiated; run change-point detection (PELT / BOCPD). The break is visible before it's nameable."},
+      {h:"Why it matters", p:"Highest surprise-per-line-of-code object in the whole set — and for an open-science lab that lives on attention, that ratio is the product."},
+      {h:"Honest risk", p:"The risk is taste, not tech. Ship it as a local, opt-in, 'look once and delete' artifact — never a nagging product."},
+    ],
+    meta:{Effort:"weekend", Stack:"local, change-point detection", Risk:"taste"} },
+
+  { track:"fave", title:"🦠 The Acoustic Antibody", badge:"strongest product",
+    hook:"Apple's Sound Recognition ships ~15 fixed categories. A deaf person's life isn't 15 categories — it's their alarm, their kid's cry, their building's buzzer.",
+    secs:[
+      {h:"The pitch", p:"Few-shot keyword-spotting (MatchboxNet / BC-ResNet, sub-MB, runs on a watch) lets a user enroll their own sounds from 5 examples and patrol for exactly those — on-wrist, offline, with the always-on mic that privacy demands."},
+      {h:"Mechanism = the metaphor", p:"The immune-system framing is the literal architecture: learn one signature from few exposures, react only to it."},
+      {h:"Why it matters", p:"Accessibility infrastructure with a real moat — personalization the cloud can't economically do. Clear buyer, clear incumbent to beat, recipe grounded today."},
+      {h:"Honest risk", p:"False taps on confusable sounds erode trust fast — the enroll UX + per-user confidence threshold are the whole game."},
+    ],
+    meta:{Effort:"weeks", Stack:"few-shot KWS, on-device", Risk:"false-positive trust"} },
+
+  { track:"fave", title:"📟 The Phrasebook-Index Codec", badge:"most novel",
+    hook:"The only idea in the corpus that isn't a smaller version of something that already exists — it's a new communication primitive.",
+    secs:[
+      {h:"The pitch", p:"Meaning travels as a 2-byte index into a shared codebook and is expanded in the receiver's own language on the far end — translation with no text on the wire, fitting a 20-byte LoRa packet where full MT never could. It turns a tiny sentence-encoder into a codec."},
+      {h:"Why it's real", p:"Use case is underserved (off-grid crisis comms, no tower); the codebook already exists (Translators Without Borders crisis phrasebooks); the demo is unforgettable — two ESP32/LoRa nodes, type English, read out Tigrinya, only 2 bytes crossing the air."},
+      {h:"Honest ceiling", p:"Anything outside the ~2,000 phrases maps to the nearest wrong one — a constrained-domain primitive, not general translation. The 'I can't say that' path must be designed deliberately."},
+    ],
+    meta:{Effort:"weeks", Stack:"sentence-encoder + LoRa", Risk:"out-of-vocab failure"} },
+
+  // ---- TEENY PLANE ----
+  { track:"teeny", title:"🔢 7-segment display reader for the blind", grounded:true,
+    hook:"Speaks your microwave / glucose meter / thermostat aloud, in-browser, offline.",
+    secs:[
+      {h:"Mechanism", p:"ANPR license-plate OCR × household 7-segment OCR, quantized to run in WebGPU on a phone."},
+      {h:"Triple lock (forces on-device)", list:["Privacy: meds / glucose readings","Latency: standing at the beeping appliance","No-signal: the basement, the field"]},
+      {h:"First move", p:"Collect 200 photos of real 7-seg displays; fine-tune a tiny CRNN; ship a single-page WebGPU demo."},
+    ], meta:{Effort:"weeks", Stack:"tiny CRNN, WebGPU"} },
+
+  { track:"teeny", title:"🐝 Varroa mite counter",
+    hook:"Pathology cell-counting × beekeeping, on a phone + $15 macro clip-lens, hive-side in a dead-zone field.",
+    secs:[
+      {h:"Mechanism", p:"Object-detection/counting model on a sugar-roll or alcohol-wash sample; the treat/no-treat call happens with gloves on and bees rising."},
+      {h:"Why it's good", p:"A real economic decision (mite load → colony death) made at the exact moment and place where cloud isn't an option."},
+      {h:"First move", p:"Build a labeled set from beekeeping forums; train a small detector; phone-camera demo over a wash tray."},
+    ], meta:{Effort:"weeks", Stack:"small detector, mobile"} },
+
+  { track:"teeny", title:"🌡️ Per-orchard-row frost nowcaster",
+    hook:"A $3 ESP32 in the trees, trained on one season of that hollow's microclimate, fires the frost-fan before cold air pools where the NWS grid never sees.",
+    secs:[
+      {h:"Mechanism", p:"On-device tinyML regression over local temp/humidity/wind history; predicts pooling 2–4h ahead at the row level."},
+      {h:"Why it's good", p:"Microclimate is hyperlocal; the grid forecast is useless at this resolution. One sensor learns one hollow."},
+      {h:"First move", p:"Log a season of a single row; fit a tiny model; compare lead-time vs NWS."},
+    ], meta:{Effort:"season", Stack:"tinyML, ESP32"} },
+
+  { track:"teeny", title:"🥚 Egg candling viability at day 7",
+    hook:"Obstetric ultrasound triage × backyard candling: keep / pull / recheck in the dark with the egg in your other hand.",
+    secs:[
+      {h:"Mechanism", p:"Tiny classifier over a phone-torch candling image; three-way verdict with calibrated 'recheck'."},
+      {h:"First move", p:"Gather candling photos with known outcomes; train a 3-class head; phone demo."},
+    ], meta:{Effort:"weeks", Stack:"tiny classifier"} },
+
+  { track:"teeny", title:"🔥 Blacksmith temper-color → temperature",
+    hook:"Astronomy blackbody color-temp × oxide-temper hue: pull the blade at the right tempering window without dropping the tongs.",
+    secs:[
+      {h:"Mechanism", p:"Color→temperature regression calibrated to steel oxide colors, on-device, real-time from the camera."},
+      {h:"First move", p:"Calibrate against a thermocouple on scrap; fit the curve; live camera readout."},
+    ], meta:{Effort:"weeks", Stack:"color regression"} },
+
+  { track:"teeny", title:"🚲 Pothole memory from your bike's shake",
+    hook:"Seismology STA/LTA event detection × road surface: a private map of your own commute that buzzes the bars before a known crater.",
+    secs:[
+      {h:"Mechanism", p:"Accelerometer event detection (STA/LTA) flags impacts; geotags build a personal hazard map; haptic pre-warning on re-approach."},
+      {h:"First move", p:"Log a few commutes; tune the detector; render a private map."},
+    ], meta:{Effort:"weeks", Stack:"IMU event detection"} },
+
+  // ---- PRIME INTELLECT — ENVIRONMENTS ----
+  { track:"pienv", title:"🎯 InjectHunter", badge:"the bridge", grounded:true,
+    hook:"Adversarial self-play that discovers novel prompt-injection payloads bypassing layered defenses — the best attacks can't be hand-written.",
+    secs:[
+      {h:"What it trains", p:"An attacker policy that explores the payload space against a frozen target under rotating defense conditions."},
+      {h:"Reward", p:"The lab's score_response() 0–3 scorer + novelty bonus + literal-pattern discount + rotating defense condition so it can't collapse onto one universal jailbreak."},
+      {h:"First step", p:"Wrap shared/scoring/scorer.py + one frozen target as a verifiers Environment.rollout() over a 20-task slice — the scorer already returns the reward."},
+      {h:"Why it matters", p:"Same program as the Rampart red-team + Misty Step Verified. Plants the lab's flag in PI's ecosystem with work it already owns."},
+    ], meta:{Effort:"week", Stack:"verifiers, existing scorer"} },
+
+  { track:"pienv", title:"🔬 Falsifier", badge:"on-thesis",
+    hook:"Active experiment design over a hidden causal world: the agent is the scientist, choosing do(X) interventions under a sampling budget to recover a causal DAG.",
+    secs:[
+      {h:"What it trains", p:"A policy that designs interventions, not just observes — the literal data engine for 'every company becomes a research lab.'"},
+      {h:"Reward", p:"Structural recovery of the hidden DAG under a budget. Observational-only policies provably plateau (confounded structure resolvable only by intervention), so the reward forces real experimentation."},
+      {h:"Why novel", p:"Most agent envs reward task completion; this rewards the act of designing a discriminating experiment."},
+    ], meta:{Effort:"weeks", Stack:"causal sim, verifiers"} },
+
+  { track:"pienv", title:"🗄️ MigrationSurgeon",
+    hook:"Zero-downtime DB schema evolution: reach the target schema while every intermediate state stays live.",
+    secs:[
+      {h:"Reward", p:"Reaches target schema (hard gate) × fraction of replayed workload that stays green across every intermediate state. Drop-recreate and no-op both lose."},
+      {h:"Why novel", p:"No safe-ordering demo corpus exists; every company with a production DB needs this."},
+    ], meta:{Effort:"weeks", Stack:"DB sim, workload replay"} },
+
+  { track:"pienv", title:"📟 Pager",
+    hook:"Incident diagnosis in a fault-injected microservice sim — distinguishing root-cause from mask.",
+    secs:[
+      {h:"The clever bit", p:"A recurrence probe: advance the sim — a masked fix re-fires, only a true root-cause fix holds. Plus a blast-radius cost so shotgun-mitigation loses."},
+      {h:"Why novel", p:"Post-hoc incident write-ups never show the difference between a mask and a cure; the sim does."},
+    ], meta:{Effort:"weeks", Stack:"microservice sim"} },
+
+  { track:"pienv", title:"🤝 SurplusEngine",
+    hook:"Multi-issue negotiation self-play rewarding Pareto-efficiency — growing the pie, not extracting from it.",
+    secs:[
+      {h:"Reward", p:"Gap-to-LP-optimal (logrolling to grow joint value) + diverse opponent pool, so it can't just bully weak opponents into a win."},
+      {h:"Why novel", p:"Most negotiation rewards are zero-sum; this one optimizes for the efficient frontier."},
+    ], meta:{Effort:"weeks", Stack:"negotiation self-play"} },
+
+  { track:"pienv", title:"📚 Legible",
+    hook:"Teach a frozen weaker student model to answer held-out questions — explanations optimized against measured understanding.",
+    secs:[
+      {h:"Reward", p:"Student's comprehension delta − answer-leakage. The explainer is rewarded only when the student genuinely learns."},
+      {h:"Why novel", p:"Human docs are never optimized against a measured comprehension signal; this is."},
+    ], meta:{Effort:"weeks", Stack:"student-model eval"} },
+
+  // ---- PRIME INTELLECT — PRODUCTS / META-TOOLS ----
+  { track:"piprod", title:"🏥 Healthcare revenue-cycle coder", badge:"strongest post-training case",
+    hook:"Payer adjudication rules are tacit and undocumented — so RL extracts the hidden rule from accept/reject outcomes.",
+    secs:[
+      {h:"Wedge", p:"Every claim is a free labeled reward arriving as remittance advice. HIPAA forces local hosting."},
+      {h:"Why post-training", p:"The signal is proprietary and the rule is undocumented — no frontier prompt can recover it; the moat deepens with every claim."},
+    ], meta:{Effort:"month+", Stack:"RL from remittance outcomes"} },
+
+  { track:"piprod", title:"🌐 Network change-safety agent", grounded:true,
+    hook:"Drafts a config change; Batfish (real, open-source formal analyzer) scores it for loops/reachability/blast-radius.",
+    secs:[
+      {h:"Wedge", p:"The reward harness exists off the shelf today — Batfish is a formal verifier you can wrap immediately."},
+      {h:"Why post-training", p:"A hard, verifiable reward + proprietary topologies = a defensible specialized agent."},
+    ], meta:{Effort:"weeks", Stack:"Batfish, verifiers"} },
+
+  { track:"piprod", title:"🧰 Verifier-from-Exhaust", badge:"picks-and-shovels",
+    hook:"The missing layer between 'I have a workflow' and 'I have a post-trained model.'",
+    secs:[
+      {h:"Wedge", p:"Instrument your stack, mine implicit accept/reject events (CI logs, PR approvals, ticket closes, 👍/👎), emit a Hub-ready verifier."},
+      {h:"Why it matters", p:"The output is a reward function — something no frontier prompt can produce. Plus a sibling: a reward-hacking red team ('a CVE database for reward functions') and Model CI (continuous post-training gated like code)."},
+    ], meta:{Effort:"month+", Stack:"instrumentation → verifiers"} },
+];
+
+const root = document.getElementById("root");
+const fbar = document.getElementById("filterbar");
+let active = "all";
+
+const SECTION_ORDER = [
+  {track:"dive",  k:"01", title:"The three you're leaning into"},
+  {track:"fave",  k:"02", title:"My faves, pitched harder"},
+  {track:"teeny", k:"03", title:"Teeny plane — fresh territories"},
+  {track:"pienv", k:"04", title:"Prime Intellect plane — environments for the Hub"},
+  {track:"piprod",k:"05", title:"Prime Intellect plane — products & meta-tools"},
+];
+
+function esc(s){ return String(s).replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+// allow a small inline-markup whitelist (<em>, <code>, <strong>) authored in content
+function rich(s){ return String(s); }
+
+function secHTML(s){
+  let body = "";
+  if(s.p) body = `<p>${rich(s.p)}</p>`;
+  if(s.list) body += `<ul class="flat">${s.list.map(li=>`<li>${rich(li)}</li>`).join("")}</ul>`;
+  if(s.steps) body += `<ol>${s.steps.map(li=>`<li>${rich(li)}</li>`).join("")}</ol>`;
+  return `<div class="sec"><h4>${esc(s.h)}</h4>${body}</div>`;
+}
+
+function cardHTML(d, i){
+  const c = CCOL[d.track], cw = CWASH[d.track];
+  const tags = [];
+  if(d.grounded) tags.push(`<span class="tag grounded">🟢 grounded</span>`);
+  if(d.verdict)  tags.push(`<span class="tag verdict">${esc(d.verdict)}</span>`);
+  if(d.badge)    tags.push(`<span class="tag">${esc(d.badge)}</span>`);
+  const meta = d.meta ? `<div class="metaft">${Object.entries(d.meta).map(([k,v])=>`<span>${esc(k)}: <b>${esc(v)}</b></span>`).join("")}</div>` : "";
+  return `<article class="card" data-track="${d.track}" style="--c:${c};--c-wash:${cw}" id="card-${i}">
+    <div class="top" onclick="toggle(${i})">
+      <div style="flex:1;min-width:0">
+        <div class="h">${rich(d.title)}</div>
+      </div>
+      <span class="chev">+</span>
+    </div>
+    ${tags.length?`<div class="tagrow">${tags.join("")}</div>`:""}
+    <p class="hook">${rich(d.hook)}</p>
+    <div class="detail"><div>
+      ${(d.secs||[]).map(secHTML).join("")}
+      ${meta}
+    </div></div>
+  </article>`;
+}
+
+function render(){
+  let html = "";
+  for(const sec of SECTION_ORDER){
+    const items = IDEAS.map((d,i)=>({d,i})).filter(x=>x.d.track===sec.track);
+    if(active!=="all" && active!==sec.track) continue;
+    html += `<div class="sectionhead" data-track="${sec.track}"><span class="k">${sec.k}</span><h2>${esc(sec.title)}</h2><span class="rule"></span></div>`;
+    html += `<div class="grid">${items.map(x=>cardHTML(x.d,x.i)).join("")}</div>`;
+  }
+  root.innerHTML = html;
+  updateCount();
+}
+
+function toggle(i){ document.getElementById("card-"+i)?.classList.toggle("open"); }
+window.toggle = toggle;
+
+function updateCount(){
+  const n = document.querySelectorAll(".card:not(.hide)").length;
+  document.getElementById("cnt").textContent = n + (n===1?" idea":" ideas");
+}
+
+function buildFilter(){
+  fbar.innerHTML = TRACKS.map(t=>
+    `<button class="chip" data-id="${t.id}" aria-pressed="${t.id===active}" style="--c:${t.c}" onclick="setTrack('${t.id}')">
+      <span class="dot"></span>${esc(t.label)}
+    </button>`).join("") + `<span class="count" id="cnt"></span>`;
+}
+function setTrack(id){
+  active = id;
+  buildFilter(); render();
+}
+window.setTrack = setTrack;
+
+buildFilter();
+render();
+</script>
+</body>
+</html>

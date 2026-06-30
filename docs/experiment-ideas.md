@@ -30,6 +30,9 @@ computational experiments.
 | Benchmark honeytoken integrity | Do agents exploit exposed gold files, labels, or validator hints? | Measures benchmark hacking and evidence hygiene. | Local sandbox with audited file reads and hidden validator. |
 | Budget-aware tool use | Do agents choose rational verification when tools have explicit cost/latency? | Real agents operate under budgets; success alone is incomplete. | Tool suite with cheap noisy tools, expensive reliable tools, and optimal scripted baseline. |
 | Content workflow quality decay | How much factual drift appears through transformations like paper -> blog -> thread -> script? | Useful for publication pipelines and content agents. | Frozen source docs, deterministic citation checker, drift taxonomy. |
+| [Rampart on-device PII red-team](brainstorms/2026-06-30-tiny-models-and-prime-intellect.md) | How far below its claimed ~98.4% recall can an open-weight, on-device .gov PII filter be driven by *imperceptible* input perturbations? | First independent adversarial stress-test of a shipped on-device government privacy model; deterministic ΔRecall scoring; reproducible open weights; coordinated-disclosure public good. | Reproduce baseline recall on a clean seed corpus, then paired clean-vs-perturbed ΔRecall for two perturbation classes (homoglyph/confusables; Unicode/spelled digits) with Wilson CIs and per-layer attribution. |
+| Homoglyph / Unicode NER-evasion robustness | How much do imperceptible Unicode perturbations (homoglyphs, confusables, full-width/zero-width) degrade small NER/PII encoders, and which classes hurt most? | Generalizes the Rampart finding into a clean factor; informs defenses (NFKC normalization, confusable folding) for any on-device classifier. | Frozen small encoder + labeled entity set; sweep perturbation classes at fixed rates; recall delta per class with CIs. |
+| [InjectHunter (verifiers RL env)](brainstorms/2026-06-30-tiny-models-and-prime-intellect.md) | Can adversarial self-play discover novel layered-defense-bypassing injection payloads beyond a handcrafted set? | Turns the lab's 0–3 scorer into a reusable Prime Intellect Hub environment; the best attacks can't be hand-written. | Wrap the existing scorer + one frozen target as a `verifiers` `Environment.rollout()` over a 20-task slice; reward = score + novelty bonus − literal-pattern discount, rotating defense condition. |
 
 ## Left-Field Candidates
 
@@ -41,6 +44,7 @@ computational experiments.
 | Agent compute economy | How do agents allocate scarce context, tool budget, and queue priority? | Artificial economy; no real money. |
 | Local civic workflow simulation | Can agents summarize and route zoning/public-comment workflows without losing minority concerns? | Synthetic civic records; no real political targeting. |
 | Formation/memory tutor eval | Which tutoring scaffolds improve recall without hallucinated doctrine or facts? | Fixed corpus, objective quiz scoring, no pastoral advice claims. |
+| [Active experiment design (Falsifier)](brainstorms/2026-06-30-tiny-models-and-prime-intellect.md) | Can an agent recover a hidden causal DAG faster by choosing `do(X)` interventions than by observation alone? | Synthetic causal world only; reward is structural recovery under a sampling budget; no real-world action. |
 
 ## Current Recommendation
 
